@@ -1,5 +1,6 @@
 import discord
 import json
+import wikipedia
 from riotapi     import Riot
 from discord.ext import commands
 
@@ -12,6 +13,7 @@ class Jeeves(commands.Bot):
         self.add_command(self.hi)
         self.add_command(self.sumlvl)
         self.add_command(self.lolV)
+        self.add_command(self.lollive)
         self.riotapi = Riot(self.riot)
 
     @property
@@ -56,8 +58,14 @@ class Jeeves(commands.Bot):
         #need to test GET request here
         await self.say("https://na.leagueoflegends.com/en/news/game-updates" + \
             "/patch/patch-{}-notes".format(version[0:4].replace(".","")))
+
+    @commands.command()
+    async def lollive(self,name):
+        await self.say(self.riotapi.getLiveMatch(name))
     
-    def setVersion
+    @commands.command()
+    async def wiki(self,item):
+        await self.say(wikipedia.summary(item))
 
 if __name__ == '__main__':
     Jeeves.init()
