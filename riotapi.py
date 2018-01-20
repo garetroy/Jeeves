@@ -1,24 +1,54 @@
+"""
+    Filename: riotapi.py
+    Author:   Garett Roberts
+    Repo:     https://github.com/garetroy/Jeeves
+
+    This is the api for getting riot queries. 
+    Part of a larger project named Jeeves, but can work independantly.
+
+    REQUIRED:
+        Please, have a json file named "champions.json" that contain
+        champion info (should come with repository)
+
+"""
+   
+     
 import urllib.request
 import json
 
 class Riot:
+    """
+        The class for making riot requests
+    """
     def __init__(self,api_key):
+        """
+        :param api_key - Your riot_api_key
+        """
         self.base_api_url   = "https://na1.api.riotgames.com"
         self.summoner_name  = "/lol/summoner/v3/summoners/by-name/"
         self.summoner_match = "/lol/match/v3/matchlists/by-account/"
         self.match_dets     = "/lol/match/v3/matches/"
         self.api_key        = api_key
-        self.summonerht     = {}
-        self.summonermht    = {}
-        self.matchesht      = {}
+        self.summonerht     = {} #summoner name hash table
+        self.summonermht    = {} #summoner matches hash table
+        self.matchesht      = {} #matches hash table
         self.champions      = self.loadChampions()
 
     @property
     def keyString(self):
+        """
+        :returns the correct ending, appending the riot api key
+        """
         return "?api_key=" + self.api_key 
 
     @property
     def version(self):
+        """
+        This makes a request to the riot api to get the current
+        leauge version
+
+        :returns the current version of leauge
+        """
         url  = "https://na1.api.riotgames.com/lol/static-data/v3/versions"
         url += self.keyString
         try:
@@ -28,18 +58,38 @@ class Riot:
             raise
 
     def loadChampions(self):
+        """
+        Loads all of the champions from json
+        :returns json formatted data of champions
+        """
         with open('champions.json', 'r') as jsonf:
             return json.load(jsonf)
         
     def getChampionByName(self,name):
+        """
+        :param name - a champions name : str
+        :returns champion object associated with a champion name
+        """
         return self.champions[name]
 
     def getChampionById(self,_id):
+        """
+        This has to do more work, because the keys are names
+
+        :param _id - a champions id
+        :returns champion object associated with champion id
+        """
         for i in self.champions:
             if(self.champions[i]['id'] == _id):
                 return self.champions[i]
     
     def summoner(self,name):
+        """
+        Checks to see if the name given is in hash table, then it uses that
+        else makes a json request for it
+        :param name - The name assoicated with a summoner
+        :returns summonor object associated with sumonner name
+        """
         if(name in self.summonerht):
             return self.summonerht[name]
 
@@ -55,9 +105,21 @@ class Riot:
         return self.summonerht[name]
 
     def summonerLevel(self,name):
+        """
+        :param name - The name associated with a summoner
+        :returns the summoners level
+        """
         return self.summoner(name)['summonerLevel']
 
     def summonerMatches(self,name,forceupdate=False):
+        """
+        If the matches for the user already exist present them,
+        else fetch them...
+        You can also force it to update when you call this method
+        :param name        - The name assicated with a summoner
+        :param forceupdate - Forces the update of the hash tables
+        :returns returns all Matches associated with the summoner name
+        """
         if(name in self.summonermht and not forceupdate):
             return self.summonermht[name]
 
