@@ -15,7 +15,6 @@
      
 import urllib.request
 import json
-import tabulate
 
 class Riot:
     """
@@ -191,16 +190,22 @@ class Riot:
             #OH GOD FIX ME
             pattern = "{: <20}{:^3}{: ^20}{:^3}{: ^8}\n"
             string  = "\n{:^50}\n\n".format("\----Game Mode: ARAM----\ ")
-            datainf = []
+            string += pattern.format("Participants", "|", "Champion", "|", "Team")
 
+            pattern = "{0: <16}{1: <16}{2:>19}\n"
             for i in red:
-                datainf.append([i,red[i][0],"Red"])
+                string += pattern.format(i,red[i][0],"Red")
             for i in blue:
-                datainf.append([i,blue[i][0],"Blue"])
+                string += pattern.format(i,blue[i][0],"Blue")
         
-        return tabulate.tabulate(datainf, headers=["Summonder","Champion","Team"])
+        return string
 
     def requestJson(self,url):
+        """
+        Requests the json from the given url
+        :params url - the url we want to request from
+        :returns the json data if successful
+        """
         try:
             with urllib.request.urlopen(url) as f:
                 data = json.loads(f.read().decode())
