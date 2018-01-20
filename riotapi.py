@@ -15,6 +15,7 @@
      
 import urllib.request
 import json
+import tabulate
 
 class Riot:
     """
@@ -131,6 +132,13 @@ class Riot:
         return self.summonermht[name]
 
     def recentMatch(self,name,forceupdate=False):
+        """
+        If match data already exists, why fetch it?
+
+        :params name        - The name associated with a summoner
+        :params forceupdate - Forces the update of the hash table entry
+        :returns the recent match data from the corresponding sum name
+        """
         matchid   = str(self.summonerMatches(name,forceupdate)\
             ['matches'][0]['gameId'])
 
@@ -144,6 +152,12 @@ class Riot:
         return self.matchesht[matchid] 
 
     def getLiveMatch(self,name):
+        """
+        Gets most recent match forcing it's update. Then sending a string
+        with data
+        :params name        - name associated with a summoner
+        :params forceupdate - Forces the update of the has tables
+        """
         #NEED CHECK HERE TO PREVENT EXCESSIVE REQUESTS
         match   = self.recentMatch(name,True)
         blueid  = match['teams'][0]['teamId']      
@@ -177,15 +191,14 @@ class Riot:
             #OH GOD FIX ME
             pattern = "{: <20}{:^3}{: ^20}{:^3}{: ^8}\n"
             string  = "\n{:^50}\n\n".format("\----Game Mode: ARAM----\ ")
-            string += pattern.format("Participants", "|", "Champion", "|", "Team")
+            datainf = []
 
-            pattern = "{0:37}{1:<}{2:30}\n"
             for i in red:
-                string += pattern.format(i,red[i][0],"Red")
+                datainf.append([i,red[i][0],"Red"])
             for i in blue:
-                string += pattern.format(i,blue[i][0],"Blue")
+                datainf.append([i,blue[i][0],"Blue"])
         
-        return string
+        return tabulate.tabulate(datainf, headers=["Summonder","Champion","Team"])
 
     def requestJson(self,url):
         try:
