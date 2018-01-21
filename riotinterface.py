@@ -14,18 +14,10 @@ class RiotInterface:
     def __init__(self,api_key,region="NA"):
         cass.set_riot_api_key(api_key)
         cass.set_default_region(region)
-        self.maps    = self.gameconstants['maps']
-        self.seasons = self.gameconstants['seasons']
-        self.qtype   = self.gameconstants['queuestypes'] 
 
     @property
     def version(self):
         return cass.get_version()
-
-    @property
-    def gameconstants(self):
-        with open('gameconstants.json', 'r') as jsonf:
-            return json.load(jsonf,strict=False)
 
     def summonerLevel(self,name):
         return cass.Summoner(name=name).level
@@ -59,9 +51,6 @@ class RiotInterface:
             print(p.summoner.name)
     
 if __name__ == '__main__':
-    with open('info.json', 'r') as jsonf:
-        key = json.load(jsonf)['riot']
-
     r = RiotInterface(key)
     print(r.version)
     print(r.summonerLevel("prolixed"))
