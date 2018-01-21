@@ -61,11 +61,40 @@ class Jeeves(commands.Bot):
 
     @commands.command()
     async def lollive(self,name):
-        await self.say(self.riotapi.getLiveMatch(name))
+        global maps
+        global matchtypes
+        result = self.riotapi.getLiveMatch(name)
+        matcht = matchtypes[str(result[2])]['string']
+        red    = result[1]
+        blue   = result[0]
+        mapid  = maps[str(result[3])]['name']
+        string  = "\n{:^50}\n".format("\----{}----\ ".format(matcht))
+        string  += "\n{:^50}\n\n".format("\----{}----\ ".format(mapid))
+        pattern = "{:<10}{:^3}{:^10}{:^3}{:^8}\n\n"
+        string += pattern.format("Participants", "|", "Champion", "|", "Team")
+        for i in red:
+            string += i + (" "*(16-len(i)))
+            string += red[i][0] + (" "*(14 - len(red[i][0])))
+            string += "Red\n"
+        string += "\n"
+        for i in blue:
+            string += i + (" "*(16-len(i)))
+            string += blue[i][0] + (" "*(14-len(blue[i][0])))
+            string += "Blue\n"
+
+        string =  "```" + string + "```"
+
+        await self.say(string)
     
     @commands.command()
     async def wiki(self,item):
         await self.say(wikipedia.summary(item))
 
 if __name__ == '__main__':
+    global maps
+    global matchtypes
+    with open('gameconstants.json', 'r') as jsonf:
+        all_ = json.load(jsonf,strict=False)
+        maps = all_['maps']
+        matchtypes = all_['queuestypes']
     Jeeves.init()

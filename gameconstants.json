@@ -1,186 +1,186 @@
 {
     "seasons":{
-        0  : "Pre-season 3",
-        1  : "Season 3",
-        2  : "Pre-season 2014",
-        3  : "Season 2014",
-        4  : "Pre-season 2015",
-        5  : "Season 2015",
-        6  : "Pre-season 2016",
-        7  : "Season 2016",
-        8  : "Pre-season 2017",
-        9  : "Season 2017",
-        10 : "Pre-season 2018",
-        11 : "Season 2018"
+        "0"  : "Pre-season 3",
+        "1"  : "Season 3",
+        "2"  : "Pre-season 2014",
+        "3"  : "Season 2014",
+        "4"  : "Pre-season 2015",
+        "5"  : "Season 2015",
+        "6"  : "Pre-season 2016",
+        "7"  : "Season 2016",
+        "8"  : "Pre-season 2017",
+        "9"  : "Season 2017",
+        "10" : "Pre-season 2018",
+        "11" : "Season 2018"
         },
 
     "maps":{
-        1  : {
+        "1"  : {
                 "name"  : "Summoner's Rift",
                 "notes" : "Original Summer Variant"
              },
-        2  : {
+        "2"  : {
                 "name"  : "Summoner's Rift",
                 "notes" : "Original Autumn Variant"
              },
-        3  : { 
+        "3"  : { 
                 "name"  : "The Proving Grounds",
                 "notes" : "Tutorial Map"
              },
-        4  : {
+        "4"  : {
                 "name"  : "Twisted Treeline",
                 "notes" : "Original Version"
              },
-        8  : {
+        "8"  : {
                 "name"  : "The Crystal Scar",
                 "notes" : "Dominion Map"
              },
-        10 : {
+        "10" : {
                 "name"  : "Twisted Treeline",
                 "notes" : "Current Version"
              },
-        11 : {
+        "11" : {
                 "name"  : "Summoner's Rift",
                 "notes" : "Current Version"
              },
-        12 : {
+        "12" : {
                 "name"  : "Howling Abyss",
                 "notes" : "ARAM Map"
              },
-        14 : {
+        "14" : {
                 "name"  : "Howling Abyss",
                 "notes" : "Butcher's Bridge"
              },
-        16 : {
+        "16" : {
                 "name"  : "Cosmic Ruins",
                 "notes" : "Dark Star: Singularity Map"
              },
-        18 : {
+        "18" : {
                 "name"  : "	Valoran City Park",
                 "notes" : "Star Guardian Invasion Map"
              },
-        19 : {
+        "19" : {
                 "name"  : "	Substructure 43",
                 "notes" : "PROJECT: Hunters Map"
              }
     },
 
     "queuestypes":{
-        0    : {
+        "0"    : {
                 "string" : "Custom game"
               },
-        70   : {
+        "70"   : {
                 "string" : "One for all Games"
               },
-        72   : {
+        "72"   : {
                 "string" : "1v1 Snowdown Showdown"
               },
-        73   : {
+        "73"   : {
                 "string" : "2v2 Snowdown Showdown"
               },
-        75   : {
+        "75"   : {
                 "string" : "6v6 Hexakill"
               },
-        76   : {
+        "76"   : {
                 "string" : "Ultra Rapid Fire"
               },
-        78   : {
+        "78"   : {
                 "string" : "Mirrored One for All"
               },
-        83   : {
+        "83"   : {
                 "string" : "Co-op vs Al Ultra Rapid Fire"
               },
-        98   : {
+        "98"   : {
                 "string" : "6v6 Hexakill"
               },
-        100  : {
+        "100"  : {
                 "string" : "5v5 ARAM"
               },
-        310  : {
+        "310"  : {
                 "string" : "Nemesis"
               },
-        313  : {
+        "313"  : {
                 "string" : "Black Market Brawlers"
               },
-        317  : {
+        "317"  : {
                 "string" : "Definitely Note Dominion"
               },
-        325   : {
-                "string" : "All Random"
+        "325"   : {
+                "string" : "Random"
               },
-        400   : {
+        "400"   : {
                 "string" : "5v5 Draft Pick"
               },
-        420   : {
+        "420"   : {
                 "string" : "5v5 Ranked Solo"
               },
-        430   : {
+        "430"   : {
                 "string" : "5v5 Blind Pick"
               },
-        440   : {
+        "440"   : {
                 "string" : "5v5 Ranked Flex"
               },
-        450   : {
+        "450"   : {
                 "string" : "5v5 ARAM"
               },
-        460   : {
+        "460"   : {
                 "string" : "3v3 Blind Pick"
               },
-        470   : {
+        "470"   : {
                 "string" : "3v3 Ranked Flex"
               },
-        600   : {
+        "600"   : {
                 "string" : "Boold Hunt Assassin"
               },
-        610   : {
+        "610"   : {
                 "string" : "Dark Star: Singularity"
               },
-        800  : {
+        "800"  : {
                 "string" : "Co-op vs. AI Intermediate Bot"
               },
-        810  : {
+        "810"  : {
                 "string" : "Co-op vs. AI Intro Bot"
               },
-        820  : {
+        "820"  : {
                 "string" : "Co-op vs. AI Beginner Bot"
               },
-        830  : {
+        "830"  : {
                 "string" : "Co-op vs. AI Intermediate Bot"
               },
-        840  : {
+        "840"  : {
                 "string" : "Co-op vs. AI Intro Bot"
               },
-        850  : {
+        "850"  : {
                 "string" : "Co-op vs. AI Beginner Bot"
               },
-        900  : {
+        "900"  : {
                 "string" : "ARURF"
               },
-        910  : {
+        "910"  : {
                 "string" : "Ascension"
               },
-        920  : {
+        "920"  : {
                 "string" : "Legend of the Poro King"
               },
-        940  : {
+        "940"  : {
                 "string" : "Nexus Siege"
               },
-        950  : {
+        "950"  : {
                 "string" : "Doom Bots Voting"
               },
-        960  : {
+        "960"  : {
                 "string" : "Doom Bots Standard"
               },
-        980  : {
+        "980"  : {
                 "string" : "Star Guardian Invasion: Normal games"
               },
-        990  : {
+        "990"  : {
                 "string" : "Star Guardian Invasion: Onslaught games"
               },
-        1000 : {
+        "1000" : {
                 "string" : "PROJECT: Hunters games"
               },
-        1010 : {
+        "1010" : {
                 "string" : "Snow ARURF"
               }
     }

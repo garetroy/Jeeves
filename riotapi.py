@@ -156,6 +156,7 @@ class Riot:
         with data
         :params name        - name associated with a summoner
         :params forceupdate - Forces the update of the has tables
+        :returns an array containing blueteams, redteams, and matchtype 
         """
         #NEED CHECK HERE TO PREVENT EXCESSIVE REQUESTS
         match   = self.recentMatch(name,True)
@@ -163,7 +164,8 @@ class Riot:
         redid   = match['teams'][1]['teamId']
         blue    = {}
         red     = {}
-        matcht  = match['gameMode']
+        matcht  = match['queueId']
+        mapid   = match['mapId']
 
         for participant in match['participants']:
             if(participant['teamId'] == blueid):
@@ -186,29 +188,9 @@ class Riot:
             else:
                 continue
 
-        string  = "\n{:^50}\n\n".format("\----Game Mode: {}----\ ".format(matcht))
-        if(matcht != "CLASSIC"):
-            pattern = "{:<10}{:^3}{:^10}{:^3}{:^8}\n\n"
-            string += pattern.format("Participants", "|", "Champion", "|", "Team")
-            for i in red:
-                string += i + (" "*(16-len(i)))
-                string += red[i][0] + (" "*(14 - len(red[i][0])))
-                string += "Red\n"
-            string += "\n"
-            for i in blue:
-                string += i + (" "*(16-len(i)))
-                string += blue[i][0] + (" "*(14-len(blue[i][0])))
-                string += "Blue\n"
+        return [blue, red, matcht, mapid]
 
-            return "```" + string + "```"
-
-        elif(matcht == "CLASSIC"):
-            return "```" + string + "```"
-            
-        
-        
-        
-
+           
     def requestJson(self,url):
         """
         Requests the json from the given url
