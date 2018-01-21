@@ -13,7 +13,7 @@ class Jeeves(commands.Bot):
         self.add_command(self.hi)
         self.add_command(self.sumlvl)
         self.add_command(self.lolV)
-        self.add_command(self.lollive)
+        self.add_command(self.lollast)
         self.riotapi = Riot(self.riot)
 
     @property
@@ -60,7 +60,7 @@ class Jeeves(commands.Bot):
             "/patch/patch-{}-notes".format(version[0:4].replace(".","")))
 
     @commands.command()
-    async def lollive(self,name):
+    async def lollast(self,name):
         global maps
         global matchtypes
         result = self.riotapi.getLiveMatch(name)
