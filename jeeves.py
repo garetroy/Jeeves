@@ -14,6 +14,7 @@ class Jeeves(commands.Bot):
         self.add_command(self.sumlvl)
         self.add_command(self.lolV)
         self.add_command(self.lollast)
+        self.add_command(self.wiki)
         self.riotapi = Riot(self.riot)
 
     @property

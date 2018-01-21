@@ -1,0 +1,3 @@
+A bot for discord...
+
+IN DEVELOPMENT - Documentation to come soon
