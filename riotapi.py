@@ -156,7 +156,7 @@ class Riot:
         with data
         :params name        - name associated with a summoner
         :params forceupdate - Forces the update of the has tables
-        :returns an array containing blueteams, redteams, and matchtype 
+        :returns an array containing blueteams, redteams, matchtype, and mapid
         """
         #NEED CHECK HERE TO PREVENT EXCESSIVE REQUESTS
         match   = self.recentMatch(name,True)
