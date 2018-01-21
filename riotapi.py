@@ -185,20 +185,29 @@ class Riot:
                 del red[pid]
             else:
                 continue
-                
-        if(matcht == "ARAM"):
-            #OH GOD FIX ME
-            pattern = "{: <20}{:^3}{: ^20}{:^3}{: ^8}\n"
-            string  = "\n{:^50}\n\n".format("\----Game Mode: ARAM----\ ")
-            string += pattern.format("Participants", "|", "Champion", "|", "Team")
 
-            pattern = "{0: <16}{1: <16}{2:>19}\n"
+        string  = "\n{:^50}\n\n".format("\----Game Mode: {}----\ ".format(matcht))
+        if(matcht != "CLASSIC"):
+            pattern = "{:<10}{:^3}{:^10}{:^3}{:^8}\n\n"
+            string += pattern.format("Participants", "|", "Champion", "|", "Team")
             for i in red:
-                string += pattern.format(i,red[i][0],"Red")
+                string += i + (" "*(16-len(i)))
+                string += red[i][0] + (" "*(14 - len(red[i][0])))
+                string += "Red\n"
+            string += "\n"
             for i in blue:
-                string += pattern.format(i,blue[i][0],"Blue")
+                string += i + (" "*(16-len(i)))
+                string += blue[i][0] + (" "*(14-len(blue[i][0])))
+                string += "Blue\n"
+
+            return "```" + string + "```"
+
+        elif(matcht == "CLASSIC"):
+            return "```" + string + "```"
+            
         
-        return string
+        
+        
 
     def requestJson(self,url):
         """
@@ -246,4 +255,4 @@ if __name__ == '__main__':
 
     jsondata  = getJsonData()
     r = Riot(jsondata['riot'])
-    r.getLiveMatch('prolixed')
+    print(r.getLiveMatch('prolixed'))
