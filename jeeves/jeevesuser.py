@@ -10,7 +10,7 @@ class JeevesUser:
         self.leaugename = None
         self.leaugeid   = None 
         self.runescapen = None #runescapename
-        self.remindlive = (None,None) #(leaugeid,True/False)
+        self.remindlive = [] #(leaugeid,True/False)
         self.remindlupd = False #Message if new leauge patch
         self.callme     = (None,None) #(nickname, True/False)  
 
@@ -31,3 +31,12 @@ class JeevesUser:
 
     def __lt__(self,other):
         return not self > other
+
+    def __str__(self):
+        return self.name
+
+    def __repr__(self):
+        return "<JeevesUser (id={}, name={}, points={})>".format(\
+                self.id, self.name, self.points)
+   
+        
