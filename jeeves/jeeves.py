@@ -62,7 +62,7 @@ class Jeeves(commands.Bot):
         version = self.RI.version
         await self.say("Leauge is in version {}".format(version))
         #need to test GET request here
-        await self.say("https://na.leagueoflegends.com/en/news/game-updates" + \
+        await self.say("https://na.leagueoflegends.com/en/news/game-updates" +\
             "/patch/patch-{}-notes".format(version[0:4].replace(".","")))
 
     @commands.command()
@@ -94,29 +94,49 @@ class Jeeves(commands.Bot):
 
     @commands.command()
     async def points(self,name=None):
+        message = self.messages[0]
         try:
             if(name == None):
-                    user = self.messages[0].author
+                    user = message.author
             else:
-                    user = self.get_user_info(name)
+                    user = message.server.get_member_named(name)
+                    if(user == None):
+                        user = message.server.get_member(name)
 
-            await self.say("```css\n You have {}  points```".format(\
-                self.JUI.checkPoints(user)))
-        except:
-            await self.say("Could not find user...") 
+            outstring = "You have {}  points".format(self.JUI.checkPoints(user))
+            await self.say(self.JUI.cssify(outstring))
+        except KeyError as err:
+            outstring = "{} is not registered to play games".format(user.name)
+            await self.say(self.JUI.cssify(outstring))
+            print(err)
+        except ValueError as err:
+            await self.say(self.JUI.cssify("@garett -- points"))
+            print(err)
 
     @commands.command()
-    async def flip(self,guess=None,bet=None,opponent=None):
+    async def flip(self,guess=None,bet=None, *, opponent=None):
+        side = ""
+        msg  =  self.messages[0]
         if(guess == None):
             side = self.JUI.flipCoin()
         elif(bet == None):
             side = self.JUI.flipCoinGuess(guess)[1] 
         elif(bet != None and opponent !=None and guess != None):
-            user = self.messages[0].author
-            opp  = self.get_user_info(opponent)
-            side = self.JUI.flipCoinBet(user,guess,bet,opp)
-            await self.say("Something went wrong..")
-            return
+            try:
+                member = msg.author
+                opp    = msg.server.get_member_named(opponent)
+                if(opp == None):
+                    opponent = ''.join(i for i in opponent if i.isdigit())
+                    opp = msg.server.get_member(opponent)
+                side   = self.JUI.flipCoinBet(member,opp,guess,bet)
+
+            except KeyError as err:
+                side = "{} does not have correct permissions".format(\
+                    member.name)
+                print(err)
+            except ValueError as err:
+                side = "@garett -- flip"
+                print(err)
 
         await self.say(self.JUI.cssify(side))
 
