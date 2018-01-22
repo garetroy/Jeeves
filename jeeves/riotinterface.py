@@ -56,7 +56,7 @@ class RiotInterface:
             name    = p.summoner.name
             champ   = p.champion.name
             string += name + (" "*(16-len(name)))
-            string += champ + (" "*(14-len(champ))) + "\n"
+            string += champ + (" "*(14-len(champ)))
 
         string += "\nRed Team\n"
         string += "----------\n"
@@ -64,12 +64,12 @@ class RiotInterface:
             name    = p.summoner.name
             champ   = p.champion.name
             string += name + (" "*(16-len(name)))
-            string += champ + (" "*(14-len(champ))) + "\n"
+            string += champ + (" "*(14-len(champ)))
 
         return "```" + string + "```"
     
 if __name__ == '__main__':
-    with open('info.json', 'r') as jsonf:
+    with open('../data/info.json', 'r') as jsonf:
         key = json.load(jsonf)['riot']
 
     r = RiotInterface(key)

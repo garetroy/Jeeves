@@ -19,12 +19,12 @@ class Jeeves(commands.Bot):
 
     @property
     def token(self):
-        with open('info.json', 'r') as jsonf:
+        with open('../data/info.json', 'r') as jsonf:
             return json.load(jsonf)['token']
     
     @property
     def riot(self):
-        with open('info.json', 'r') as jsonf:
+        with open('../data/info.json', 'r') as jsonf:
             return json.load(jsonf)['riot']
 
     @classmethod
@@ -46,7 +46,7 @@ class Jeeves(commands.Bot):
 
     @commands.command()
     async def sumlvl(self,name=None):
-        if(name == None):
+        if(name == ""):
             await self.say("You must give me a name to lookup..")
             return
         await self.say("{}es level: {}"\
@@ -65,6 +65,7 @@ class Jeeves(commands.Bot):
         msg = await self.say("```css\n Retreving data...```")
         st  = self.RI.returnLiveString(name)
         await self.edit_message(msg,st)
+        #await self.say(msg.author)
     
     @commands.command()
     async def wiki(self,item):
