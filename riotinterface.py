@@ -39,18 +39,39 @@ class RiotInterface:
     def returnLiveString(self,name):
         recentmatch = self.getRecentMatch(name) 
         if not self.checkLive(name):
-            return "Sorry, {} does not have a live game currently.".format(name)
+            return "Sorry, {} is not in a live game currently.".format(name)
 
         blue     = recentmatch.blue_team
         red      = recentmatch.red_team
-        print(recentmatch.mode.name)
+        matcht   = recentmatch.mode.name
+        mapt     = recentmatch.map.name
 
-        tpattern = "\n{:^50}\n"
-        string = ""
+        pattrn   = "\----{}----\\"        
+        string   = "\n" + pattrn.format(matcht.capitalize()) + "\n\n"
+        string  += pattrn.format(mapt) + "\n\n"
+        
+        string += "Blue Team\n"
+        string += "----------\n"
         for p in blue.participants:
-            print(p.summoner.name)
+            name    = p.summoner.name
+            champ   = p.champion.name
+            string += name + (" "*(16-len(name)))
+            string += champ + (" "*(14-len(champ))) + "\n"
+
+        string += "\nRed Team\n"
+        string += "----------\n"
+        for p in red.participants:
+            name    = p.summoner.name
+            champ   = p.champion.name
+            string += name + (" "*(16-len(name)))
+            string += champ + (" "*(14-len(champ))) + "\n"
+
+        return "```" + string + "```"
     
 if __name__ == '__main__':
+    with open('info.json', 'r') as jsonf:
+        key = json.load(jsonf)['riot']
+
     r = RiotInterface(key)
     print(r.version)
     print(r.summonerLevel("prolixed"))

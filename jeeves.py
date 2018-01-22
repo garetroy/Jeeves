@@ -1,7 +1,7 @@
 import discord
 import json
 import wikipedia
-from riotapi     import Riot
+from riotinterface import RiotInterface
 from discord.ext import commands
 
 description = "? to use me ;)"
@@ -15,7 +15,7 @@ class Jeeves(commands.Bot):
         self.add_command(self.lolV)
         self.add_command(self.lollast)
         self.add_command(self.wiki)
-        self.riotapi = Riot(self.riot)
+        self.RI = RiotInterface(self.riot)
 
     @property
     def token(self):
@@ -50,11 +50,11 @@ class Jeeves(commands.Bot):
             await self.say("You must give me a name to lookup..")
             return
         await self.say("{}es level: {}"\
-            .format(name, self.riotapi.summonerLevel(name)))
+            .format(name, self.RI.summonerLevel(name)))
 
     @commands.command()
     async def lolV(self):
-        version = self.riotapi.version
+        version = self.RI.version
         await self.say("Leauge is in version {}".format(version))
         #need to test GET request here
         await self.say("https://na.leagueoflegends.com/en/news/game-updates" + \
@@ -62,40 +62,13 @@ class Jeeves(commands.Bot):
 
     @commands.command()
     async def lollast(self,name):
-        global maps
-        global matchtypes
-        result = self.riotapi.getLiveMatch(name)
-        matcht = matchtypes[str(result[2])]['string']
-        red    = result[1]
-        blue   = result[0]
-        mapid  = maps[str(result[3])]['name']
-        string  = "\n{:^50}\n".format("\----{}----\ ".format(matcht))
-        string  += "\n{:^50}\n\n".format("\----{}----\ ".format(mapid))
-        pattern = "{:<10}{:^3}{:^10}{:^3}{:^8}\n\n"
-        string += pattern.format("Participants", "|", "Champion", "|", "Team")
-        for i in red:
-            string += i + (" "*(16-len(i)))
-            string += red[i][0] + (" "*(14 - len(red[i][0])))
-            string += "Red\n"
-        string += "\n"
-        for i in blue:
-            string += i + (" "*(16-len(i)))
-            string += blue[i][0] + (" "*(14-len(blue[i][0])))
-            string += "Blue\n"
-
-        string =  "```" + string + "```"
-
-        await self.say(string)
+        msg = await self.say("```css\n Retreving data...```")
+        st  = self.RI.returnLiveString(name)
+        await self.edit_message(msg,st)
     
     @commands.command()
     async def wiki(self,item):
         await self.say(wikipedia.summary(item))
 
 if __name__ == '__main__':
-    global maps
-    global matchtypes
-    with open('gameconstants.json', 'r') as jsonf:
-        all_ = json.load(jsonf,strict=False)
-        maps = all_['maps']
-        matchtypes = all_['queuestypes']
     Jeeves.init()
