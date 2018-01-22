@@ -66,7 +66,6 @@ class JeevesUserInterface:
 
     def flipCoin(self):
         val =  randrange(0,2) if self.debugnum == None else self.debugnum
-        print(val)
         if(val == 0):
             self.numheads += 1
             return 'heads'

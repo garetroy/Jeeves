@@ -16,9 +16,9 @@ class Jeeves(commands.Bot):
         self.add_command(self.lolV)
         self.add_command(self.lollast)
         self.add_command(self.wiki)
-        self.add_command(self.register)
         self.add_command(self.points)
         self.add_command(self.flip)
+        self.add_command(self.flipStats)
         self.RI  = RiotInterface(self.riot)
         self.JUI = JeevesUserInterface()
 
@@ -123,6 +123,11 @@ class Jeeves(commands.Bot):
             side = self.JUI.flipCoinGuess(guess)[1] 
         elif(bet != None and opponent !=None and guess != None):
             try:
+                bet = int(bet) 
+            except:
+                await self.say("Use a integer for your bet...")
+                return
+            try:
                 member = msg.author
                 opp    = msg.server.get_member_named(opponent)
                 if(opp == None):
@@ -139,6 +144,12 @@ class Jeeves(commands.Bot):
                 print(err)
 
         await self.say(self.JUI.cssify(side))
+
+    @commands.command()
+    async def flipStats(self):
+        string = "Heads: {}\nTails: {}".format(self.JUI.numheads,\
+                    self.JUI.numtails)
+        await self.say(self.JUI.cssify(string))
 
     @commands.command()
     async def wiki(self,item):
