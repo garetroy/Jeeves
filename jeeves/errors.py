@@ -6,10 +6,10 @@ class JeevesException(Exception):
 
 
 class UserNotAdded(JeevesException):
-    def __init__(self, name, groupname, *args): 
+    def __init__(self, name, *args): 
         self.name    = name
-        self.message = "{} is not added to {} or is non-existant"\
-            .format(name,groupname)
+        self.message = "{} is not added to anything or is non-existant"\
+            .format(name)
 
 class UserInsufficentPermissions(JeevesException):
     def __init__(self, name, *args):
