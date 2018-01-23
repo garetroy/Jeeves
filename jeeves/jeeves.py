@@ -109,9 +109,7 @@ class Jeeves(commands.Bot):
 
     @commands.command()
     async def flipStats(self):
-        string = "Heads: {}\nTails: {}".format(self.JUI.numheads,\
-                    self.JUI.numtails)
-        await self.say(string)
+        await self.say(self.JUI.filStats())
 
     @commands.command()
     async def wiki(self,item):
