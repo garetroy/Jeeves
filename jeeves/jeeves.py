@@ -108,7 +108,7 @@ class Jeeves(commands.Bot):
         await self.say("Invalid input")
 
     @commands.command(pass_context=True)
-    async def points(self,ctx,name=None):
+    async def points(self,ctx,*,name=None):
         msg = ctx.message
         await self.say(self.JUI.points(name,msg))
 
