@@ -8,10 +8,14 @@ class JeevesException(Exception):
 class UserNotAdded(JeevesException):
     def __init__(self, name, *args): 
         self.name    = name
-        self.message = "{} is not added to anything or is non-existant"\
+        self.message = "{} is not added to anything or is a non-existant user"\
             .format(name)
 
 class UserInsufficentPermissions(JeevesException):
     def __init__(self, name, *args):
         self.name    = name
         self.message = "{} does not have sufficent permissions".format(name)
+
+class BadInput(JeevesException):
+    def __init__(self, message):
+        self.message = message

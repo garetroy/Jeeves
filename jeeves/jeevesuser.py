@@ -6,7 +6,7 @@ class JeevesUser:
     
         self.id         = userinstance.id
         self.name       = userinstance.name
-        self.points     = 0 
+        self.points     = 100 
         self.leaugename = None
         self.leaugeid   = None 
         self.runescapen = None #runescapename

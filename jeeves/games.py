@@ -23,7 +23,7 @@ class Games:
             guess += 's'
 
         if(guess.lower() not in ['heads','tails']):
-            return (None, "Please use heads or tails")
+            raise BadInput("Please use heads/tails")
 
         if(side == guess.lower()):
             return (True, "It was {}! You won.".format(side))
@@ -33,6 +33,7 @@ class Games:
         if not isinstance(member, Member) or not isinstance(opp, Member):
             raise ValueError
 
+        amount = int(amount)
         result = self.flipCoinGuess(guess)
 
         if(result[0] == None):
