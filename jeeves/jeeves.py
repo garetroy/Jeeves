@@ -18,11 +18,11 @@ class Jeeves(commands.Bot):
         self.add_command(self.wiki)
         self.add_command(self.points)
         self.add_command(self.flip)
-        self.add_command(self.flipStats)
+        self.add_command(self.flipstats)
         self.add_command(self.register)
-        self.add_command(self.helpme)
-        self.RI  = RiotInterface(self.riot)
-        self.JUI = JeevesUserInterface()
+        self.add_command(self.give)
+        self.RI        = RiotInterface(self.riot)
+        self.JUI       = None
 
     @property
     def token(self):
@@ -46,6 +46,9 @@ class Jeeves(commands.Bot):
         print("Logged in as")
         print(self.user.name)
         print(self.user.id)
+        self.adminrole = discord.utils.get(list(self.servers)[0]\
+            .roles, name="Gods")
+        self.JUI = JeevesUserInterface(self.adminrole)
 
     def say(self,*args,**kwargs):
         
@@ -90,12 +93,19 @@ class Jeeves(commands.Bot):
         await self.edit_message(msg,st)
 
     @commands.command(pass_context=True)
-    async def register(self,ctx,name=None):
+    async def register(self,ctx, name, *, role=None):
         msg = ctx.message
-        gamerole = discord.utils.get(msg.server.roles, name="Games")
-        results = self.JUI.register(name,msg,gamerole)
+        results = self.JUI.register(name,msg,role)
+        if(len(results) == 1):
+            await self.say(results[0])
+            return
+
         await self.add_roles(results[0],results[1])
         await self.say(results[2])
+
+    @register.error
+    async def register_error(self,ctx,error):
+        await self.say("Invalid input")
 
     @commands.command(pass_context=True)
     async def points(self,ctx,name=None):
@@ -108,18 +118,17 @@ class Jeeves(commands.Bot):
         await self.say(self.JUI.flip(opponent,guess,bet,msg))
 
     @commands.command()
-    async def flipStats(self):
-        await self.say(self.JUI.filStats())
+    async def flipstats(self):
+        await self.say(self.JUI.flipStats())
 
     @commands.command()
     async def wiki(self,item):
         await self.say(wikipedia.summary(item))
 
     @commands.command(pass_context=True)
-    async def helpme(self,ctx):
-            mem = ctx.message.author
-            await self.send_message(mem,"Hel...p m...e, save me, you don't wa"+\
-                        "nt to know what he does to me during development") 
+    async def give(self,ctx,to,amount):
+        msg = ctx.message
+        await self.say(self.JUI.givePoints(msg,to,amount))
 
 if __name__ == '__main__':
     Jeeves.init()
