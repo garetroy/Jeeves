@@ -29,8 +29,16 @@ class JeevesUserInterface:
             ju.callme = (member.nick, True)
 
         self.usersTable[member] = ju
-
         return True
+
+    def findName(self,server,name):
+        mem = server.get_member_named(name)
+
+        if(mem == None):
+            mem = ''.join(i for i in name if i.isdigit())
+            mem = server.get_member(mem)
+    
+        return mem 
          
     def checkPoints(self, member):
         if not isinstance(member, Member):
@@ -75,6 +83,13 @@ class JeevesUserInterface:
 
     def flipCoinGuess(self,guess):
         side = self.flipCoin()
+
+        if('s' not in guess): #head->heads, tail->tails
+            guess += 's'
+
+        if(guess.lower() not in ['heads','tails']):
+            return (None, "Please use heads or tails")
+
         if(side == guess.lower()):
             return (True, "It was {}! You won.".format(side))
         return (False,"It was {}! You lost.".format(side))
@@ -94,6 +109,9 @@ class JeevesUserInterface:
             return "Sorry you or the opponent does not have sufficent funds."
 
         result = self.flipCoinGuess(guess)
+        if(result[0] == None):
+            return result[1]
+
         if(result[0]):
             self.exchangePoints(opp,member,int(amount))
         else:
@@ -106,3 +124,32 @@ class JeevesUserInterface:
 
         return string
             
+    def flip(self,opponent,guess,bet,msg=None):
+        if(guess == None):
+            return self.flipCoin() 
+        if(bet == None):
+            return self.flipCoinGuess(guess)[1]
+        if(all(item is not None for item in [guess,bet,opponent,msg])):
+            try:
+                bet = int(bet)
+            except:
+                return "Use an integer for your bet {}".format(msg.author) 
+
+            try:
+                member = msg.author
+                opp    = self.findName(msg.server,opponent)
+
+                if(opp == None):
+                    return "Could not find {}".format(opponent)
+    
+                return self.flipCoinBet(member,opp,guess,amount)                 
+
+            except KeyError:
+                return "{} was not registered, or does not have correct" + \
+                        " permissions".format(member.name)
+
+            except ValueError:
+                return "Cannot find {} or {}".format(member.name,opponent)
+
+        return ""
+
