@@ -133,7 +133,8 @@ class JeevesUserInterface:
                 if(mpoints < abs(int(bet))):
                     return "You insufficant funds".format(member.name)
                  
-                result = self.games.flipCoinBet(member,opp,guess,bet)
+                result = self.games.flipCoinGuess(guess)
+
                 if(result[0] == None):
                     return result[1]
 
@@ -142,7 +143,11 @@ class JeevesUserInterface:
                 else:
                     self.exchangePoints(member,opp,int(bet))
 
-                return result[1].format(member.name,self.checkPoints(member),\
+                string  = result[1] 
+                string += "\n{} current balance:{}\n"
+                string += "{} current balance:{}"
+ 
+                return string.format(member.name,self.checkPoints(member),\
                     opp.name,self.checkPoints(opp))
 
             except UserNotAdded as err:
