@@ -1,5 +1,6 @@
 from sys        import maxsize as maxint
 from jeevesuser import JeevesUser
+from errors     import *
 from random     import randrange
 from discord    import Member
 
@@ -19,7 +20,7 @@ class JeevesUserInterface:
             raise ValueError
 
         if not self.hasPermission(member) and not permissions:
-            return False
+            raise UserInsufficentPermissons(member.name)
 
         if member in self.usersTable:
             return True
@@ -38,6 +39,9 @@ class JeevesUserInterface:
             mem = ''.join(i for i in name if i.isdigit())
             mem = server.get_member(mem)
     
+        if(mem == None):
+            raise UserNotAdded(name,"Games")
+
         return mem 
          
     def checkPoints(self, member):
@@ -47,7 +51,7 @@ class JeevesUserInterface:
         if(member not in self.usersTable):
             if(self.addUser(member)):
                 return self.usersTable[member].points
-            raise KeyError
+            raise UserNotAdded(member.name,"Games")
         else:
             return self.usersTable[member].points
 
@@ -71,6 +75,26 @@ class JeevesUserInterface:
         if("Games" not in roles and "Gods" not in roles):
             return False
         return True
+
+    def register(self,name,msg,role):
+        try:
+            if(name == None):
+                user = msg.author
+            else:
+                user = self.findName(msg.server,name)
+
+            self.addUser(user)
+            return(user,role,"{} Added to {}".format(user.name,role.name))
+
+        except UserNotAdded as err:
+            return err.message
+
+        except UserInsufficentPermissions as err:
+            return err.message
+
+        except ValueError:
+            return "Something went wrong..."
+            
 
     def flipCoin(self):
         val =  randrange(0,2) if self.debugnum == None else self.debugnum
@@ -139,17 +163,33 @@ class JeevesUserInterface:
                 member = msg.author
                 opp    = self.findName(msg.server,opponent)
 
-                if(opp == None):
-                    return "Could not find {}".format(opponent)
-    
-                return self.flipCoinBet(member,opp,guess,amount)                 
+                return self.flipCoinBet(member,opp,guess,bet)                 
 
-            except KeyError:
-                return "{} was not registered, or does not have correct" + \
-                        " permissions".format(member.name)
+            except UserNotAdded as err:
+                return err.message
+
+            except UserInsufficentPermissions as err:
+                return err.message
 
             except ValueError:
-                return "Cannot find {} or {}".format(member.name,opponent)
+                return "An error occured... Sorry"
 
-        return ""
+    def points(self,name,msg):
+        try:
+            if(name == None):
+                user = msg.author
+                return "You have {} points.".format(self.checkPoints(user))
+            else:
+                user = self.findName(msg.server,name)
+                return "{} has {} points".format(user.name,self.checkPoints(user))            
+            
+        except UserNotAdded as err:
+            return err.message
+
+        except UserInsufficentPermissions as err:
+            return err.message 
+
+        except ValueError:
+            return "An error occured... Sorry"
+
 

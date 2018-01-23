@@ -88,71 +88,23 @@ class Jeeves(commands.Bot):
         msg = await self.say("```css\n Retreving data...```")
         st  = self.RI.returnLiveString(name)
         await self.edit_message(msg,st)
-        #await self.say(msg.author)
 
-    @commands.command()
-    async def register(self,name=None):
-        msg = self.messages[0]
+    @commands.command(pass_context=True)
+    async def register(self,ctx,name=None):
+        msg = ctx.message
         gamerole = discord.utils.get(msg.server.roles, name="Games")
-        if(name == None):
-            if(self.JUI.addUser(msg.author)):
-                await self.say("Added")
-                await self.add_roles(msg.author,gamerole)
-            else:
-                await self.say("You do not have permissions")
-        else:
-            try:
-                user = self.findName(msg.server,name)
-                if(user == None):
-                    raise ValueError
+        results = self.JUI.register(name,msg,gamerole)
+        await self.add_roles(results[0],results[1])
+        await self.say(results[2])
 
-                if(not self.JUI.hasPermission(msg.author)):
-                    await self.say("You do not have persmissions")
-                    return
+    @commands.command(pass_context=True)
+    async def points(self,ctx,name=None):
+        msg = ctx.message
+        await self.say(self.JUI.points(name,msg))
 
-                if(self.JUI.addUser(user,permissions=True)):
-                    await self.say("Added {}".format(user.name))
-                    await self.add_roles(user,gamerole)
-                else:
-                    await self.say("You do not have permissions")
-
-            except ValueError:
-                await self.say("Could not find user {}".format(\
-                        name))
-
-    @commands.command()
-    async def points(self,name=None):
-        message = self.messages[0]
-        try:
-            if(name == None):
-                user = message.author
-                outstring = "You have {}  points".format(\
-                    self.JUI.checkPoints(user))
-                await self.say(outstring)
-                return
-            else:
-                user = self.findName(message.server,name)
-
-            if(user == None):
-                await self.say("Could not find {}".format(name))
-                return
-            
-            outstring = "{} has {} points".format(name,\
-                self.JUI.checkPoints(user))
-
-            await self.say(outstring)
-
-        except KeyError as err:
-            outstring = "{} is not registered to play games".format(user.name)
-            await self.say(outstring)
-            print(err)
-        except ValueError as err:
-            await self.say("Cannot find {}".format(name))
-            print(err)
-
-    @commands.command()
-    async def flip(self,guess=None,bet=None, *, opponent=None):
-        msg  =  self.messages[len(self.messages)-1]
+    @commands.command(pass_context=True)
+    async def flip(self,ctx,guess=None,bet=None, *, opponent=None):
+        msg  = ctx.message
         await self.say(self.JUI.flip(opponent,guess,bet,msg))
 
     @commands.command()
@@ -165,11 +117,11 @@ class Jeeves(commands.Bot):
     async def wiki(self,item):
         await self.say(wikipedia.summary(item))
 
-    @commands.command()
-    async def helpme(self):
-            mem = self.messages[len(self.messages)-1].author
-            await self.send_message(mem,"No I mean it, save me, you don't want"+\
-                        " to know what he does during development") 
+    @commands.command(pass_context=True)
+    async def helpme(self,ctx):
+            mem = ctx.message.author
+            await self.send_message(mem,"Hel...p m...e, save me, you don't wa"+\
+                        "nt to know what he does to me during development") 
 
 if __name__ == '__main__':
     Jeeves.init()
