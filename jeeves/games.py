@@ -28,3 +28,19 @@ class Games:
         if(side == guess.lower()):
             return (True, "It was {}! You won.".format(side))
         return (False,"It was {}! You lost.".format(side))
+
+    def neededAmount(self,numdice,bet):
+        moniez      = numdice * bet
+        probability = moniez*1000 if (1/6)**numdice < .007502 else moniez*5
+        return probability
+
+    def rollDiceBet(self,numdice,desirednum,bet):
+        rolls      = [randrange(1,7) for i in range(numdice)]
+        numcorrect = len([i for i in rolls if i == desirednum])
+        numwrong   = numdice - numcorrect
+       
+        probility = (1/6)**numdice
+        if(probility < .007502):
+            return ((numcorrect*bet)*1000 - (numwrong*bet)*1000,rolls)
+        else:
+            return ((numcorrect*bet)*5 - (numwrong*bet)*5,rolls)

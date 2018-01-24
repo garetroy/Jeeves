@@ -1,22 +1,37 @@
-from discord import User as Us
-class JeevesUser:
-    def __init__(self,userinstance):
-        if not isinstance(userinstance,Us):
-            raise ValueError
+from discord                    import Member
+from sqlalchemy                 import Column, Integer, String, Boolean
+from sqlalchemy.ext.declarative import declarative_base
+
+Base = declarative_base()
+
+class JeevesUser(Base):
+    __tablename__ = 'JeevesUser'
+
+    id         = Column(Integer, primary_key=True)
+    discordid  = Column(String)
+    name       = Column(String)
+    points     = Column(Integer)
+    leaugename = Column(String)
+    runescapen = Column(String)
+    remindupd  = Column(Boolean)
     
-        self.id         = userinstance.id
+    def __init__(self,userinstance):
+        if not isinstance(userinstance,Member):
+            raise InvalidType(type(userinstance),type(Member),"JeevesU init")
+    
+        self.discordid  = userinstance.id
         self.name       = userinstance.name
         self.points     = 100 
         self.leaugename = None
         self.leaugeid   = None 
         self.runescapen = None #runescapename
-        self.remindlive = [] #(leaugeid,True/False)
         self.remindlupd = False #Message if new leauge patch
-        self.callme     = (None,None) #(nickname, True/False)  
 
     def __eq__(self,other):
+        if(other == None):
+            return False
         if not isinstance(other,JeevesUser):
-            raise ValueError
+            raise InvalidType(type(other),type(JeevesUser), "JU eq") 
         
         return other.id == self.id
 
@@ -25,7 +40,7 @@ class JeevesUser:
 
     def __gt__(self,other):
         if not isinstance(other,JeevesUser):
-            raise ValueError
+            raise InvalidType(type(other),type(JeevesUser), "JU gt")
         
         return self.points > other.points
 

@@ -19,3 +19,8 @@ class UserInsufficentPermissions(JeevesException):
 class BadInput(JeevesException):
     def __init__(self, message):
         self.message = message
+
+class InvalidType(JeevesException):
+    def __init__(self, type1, type2, location):
+        self.message = "Got type:{} but expected type:{} - in {}".format(\
+            type1,type2,location)

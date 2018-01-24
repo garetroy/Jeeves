@@ -8,7 +8,7 @@ from .riotinterface       import RiotInterface
 from .jeevesuserinterface import JeevesUserInterface
 from discord.ext          import commands
 
-description = "? to use me ;)"
+description        = "? to use me ;)"
 startup_extensions = [f"jeeves.cogs.{ext[:-3]}" \
                 for ext in glob.glob("src/discord/*.py")]
                 
@@ -27,6 +27,7 @@ class Jeeves(commands.Bot):
         self.add_command(self.flipstats)
         self.add_command(self.register)
         self.add_command(self.give)
+#        self.add_command(self.roll)
         self.RI        = RiotInterface(self.riot)
         self.JUI       = None
 
@@ -127,6 +128,13 @@ class Jeeves(commands.Bot):
     async def flip(self,ctx,guess=None,bet=None, *, opponent=None):
         await self.say(self.JUI.flip(ctx,opponent,guess,bet))
 
+    @commands.command(pass_context=True)
+    async def roll(self,ctx,opponent,numdice,desirednumber,bet):
+        await self.say(self.JUI.roll(ctx,opponent,numdice,desirednumber,bet))
+
+    async def roll_error(self,ctx,error):
+        await self.say(error.message)
+
     @commands.command()
     async def flipstats(self):
         await self.say(self.JUI.flipStats())
@@ -136,8 +144,8 @@ class Jeeves(commands.Bot):
         await self.say(wikipedia.summary(item))
 
     @commands.command(pass_context=True)
-    async def give(self,ctx,to,amount):
-        await self.say(self.JUI.givePoints(ctx,to,amount))
+    async def give(self,ctx,amount,*,to):
+        await self.say(self.JUI.givePoints(ctx,amount,to))
 
 if __name__ == '__main__':
            Jeeves.init()

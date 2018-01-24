@@ -1,8 +1,9 @@
+from .db         import DB
 from .jeevesuser import JeevesUser
 from .games      import Games
 from .errors     import *
-from discord    import Member,utils
-from sys        import maxsize as maxint
+from discord     import Member,utils
+from sys         import maxsize as maxint
 
 class JeevesUserInterface:
     """
@@ -33,6 +34,7 @@ class JeevesUserInterface:
     
     def __init__(self,adminrole):
         self.usersTable = {}
+        self.db         = DB(self.hasPermission)
         self.games      = Games()
         self.adminrole  = adminrole
 
@@ -67,7 +69,7 @@ class JeevesUserInterface:
 
             Raises 
             -------
-            ValueError
+           InvalidInput 
                 member was not a `discord.Member`_ instance.
 
             UserInsufficentPermissions
@@ -75,53 +77,12 @@ class JeevesUserInterface:
         """
             
         if not isinstance(member, Member):
-            raise ValueError
+            raise InvalidInput(type(member),type(Member),"jui.hasPersmission")
         
         #admin always there
         roles.append(self.adminrole)
         if(not any((i in roles) for i in member.roles)):
             raise UserInsufficentPermissions(member.name)
-
-    def addUser(self, member, cmdfrom=None):
-        """
-            Adds user to the hashtable. This will be replaced by a 
-            database in the near future.
-
-            Parameters
-            ----------
-            member  : (`discord.Member`_)
-                The member that we want to add.
-
-            cmdfrom : Optional[`discord.Member`_]
-                If populated, checks the permissions of this member
-                to see if we can add the member to the group.
-
-            Raises
-            -------
-            ValueError
-                member or cmndfrom was not `discord.Member`_ instance.
-
-            UserInsufficentPermissions
-                This will be indirectly raised from `hasPermission`
-        """
-        if not isinstance(member, Member):
-            raise ValueError
-
-        if(cmdfrom != None and not isinstance(cmdfrom, Member)):
-            raise ValueError
-
-        #checks permissions for member, if cmdfrom declared
-        #then it checks if cmdfrom has permissions to add the member instead
-        #self.hasPermission(member if cmdfrom == None else cmdfrom)
-
-        if member in users.Table:
-            return
-
-        ju = JeevesUser(member)
-        if(member.nick != None):
-            ju.callme = (member.nick, True)
-
-        self.usersTable[member] = ju
 
     def findName(self,server,name):
         """
@@ -224,59 +185,10 @@ class JeevesUserInterface:
         except BadInput as err:
             return (err.message,)
 
-        except ValueError:
+        except InvalidType as err:
+            print(err.message)
             return "Something went wrong..."
  
-    def checkPoints(self, member):
-        """
-            Returns the points from a given member.
-
-            Parameters
-            ----------
-            member : (`discord.Member`_)
-            
-            Raises
-            -------
-            ValueError
-                The member was not a `discord.Member`_ instance.
-            
-            Returns
-            -------
-            **Returns** the correspoing points. (int) 
-            
-        """
-        if not isinstance(member, Member):
-            raise ValueError
-
-        if(member not in self.usersTable):
-            self.addUser(member)
-
-        return self.usersTable[member].points
-
-    def exchangePoints(self, member1, member2, amount):
-        """
-            Subtracts the amount from one user and gives it to another.
-        
-            Parameters
-            ----------
-            member1 : (`discord.Member`_)
-                The member we are taking the amount from.
-
-            member2 : (`discord.Member`_)
-                The member we are giving the amount to.
-
-            amount  : (int)
-                The amount we are exchanging.
-
-            Raises
-            -------
-            See raises from `addUser`
-        """ 
-        self.addUser(member1)
-        self.addUser(member2)
-        self.usersTable[member1].points -= amount
-        self.usersTable[member2].points += amount
-         
     def flip(self,ctx,opponent,guess,bet):
         """
             A wrapper function for the `Games` role modules in order
@@ -325,11 +237,11 @@ class JeevesUserInterface:
                 #gamerole = self.getRole(msg.server,"Games")
                 #self.hasPermission(member,[gamerole])
 
-                opoints = self.checkPoints(opp)
+                opoints = self.db.checkPoints(opp)
                 if(opoints < abs(int(bet))):
                     return "{} Has insufficant funds".format(opp.name)
 
-                mpoints = self.checkPoints(member)
+                mpoints = self.db.checkPoints(member)
                 if(mpoints < abs(int(bet))):
                     return "You insufficant funds".format(member.name)
                  
@@ -339,16 +251,16 @@ class JeevesUserInterface:
                     return result[1]
 
                 if(result[0]):
-                    self.exchangePoints(opp,member,int(bet))
+                    self.db.exchangePoints(opp,member,int(bet))
                 else:
-                    self.exchangePoints(member,opp,int(bet))
+                    self.db.exchangePoints(member,opp,int(bet))
 
                 string  = result[1] 
                 string += "\n{} current balance:{}\n"
                 string += "{} current balance:{}"
  
-                return string.format(member.name,self.checkPoints(member),\
-                    opp.name,self.checkPoints(opp))
+                return string.format(member.name,self.db.checkPoints(member),\
+                    opp.name,self.db.checkPoints(opp))
 
             except UserNotAdded as err:
                 return err.message
@@ -359,7 +271,8 @@ class JeevesUserInterface:
             except BadInput as err:
                 return err.message
 
-            except ValueError:
+            except InvalidType as err:
+                print(err.message)
                 return "An error occured... Sorry"
 
         else:
@@ -386,11 +299,11 @@ class JeevesUserInterface:
         try:
             if(name == None):
                 user = ctx.message.author
-                return "You have {} points.".format(self.checkPoints(user))
+                return "You have {} points.".format(self.db.checkPoints(user))
             else:
                 user = self.findName(ctx.message.server,name)
                 return "{} has {} points".format(user.name,\
-                    self.checkPoints(user))            
+                    self.db.checkPoints(user))            
             
         except UserNotAdded as err:
             return err.message
@@ -398,7 +311,88 @@ class JeevesUserInterface:
         except UserInsufficentPermissions as err:
             return err.message 
 
-        except ValueError:
+        except InvalidType as err:
+            print(err.message)
+            return "An error occured... Sorry"
+
+    def roll(self,ctx,opponent,numdice,desnum,bet):
+        """
+            Rolls dice against opponent.
+
+            Bets are calculated as...
+            (bet*2)^(number of correct guess) -
+            (bet*2)^(number of wrong guesses)
+
+            Parameters
+            ----------
+            ctx : (discord.ext.Context)
+                A context given by the discord bot.
+            
+            opponent : (str)
+                The name of the opponent we want to roll against.
+            
+            numdice : (int)
+                The amount of dice we want to bet with.
+
+            desnum : (int)
+                The desired numbers from the dice.
+
+            bet : (int)
+                The bet against the dice.
+
+           
+            Returns
+            --------
+            Returns a string if you won or lost.
+            If error, returns the error string.
+        """
+        try:
+            opp = self.findName(ctx.message.server,opponent) 
+            try:
+                numdice = int(numdice)  
+                desnum  = int(desnum)
+                bet     = int(bet)
+                if(numdice < 0 or desnum < 0 or bet < 0):
+                    raise BadInput("")
+            except BadInput:
+                raise BadInput("Please positve integers for numdice, desnum,"+\
+                   " and bet") 
+
+            needed = self.games.neededAmount(numdice,bet)
+            if(self.db.checkPoints(opp) < needed):
+                raise BadInput("{} does not have the balance to bet this much"\
+                    .format(opp.name))
+
+            if(self.db.checkPoints(ctx.message.author) < needed):
+                raise BadInput("{} does not have the balance to bet this much"\
+                    .format(ctx.message.author.name))
+
+            result = self.games.rollDiceBet(numdice,desnum,bet)
+            self.exchangePoints(ctx.message.author,opp,result[0])
+           
+            print(result)
+            if(result[0] >= 0):
+                string  = "{} won {} points".format(ctx.message.author.name,\
+                        result[0])
+            else:
+                string  = "{} won {} points.".format(opp.name,(-1)*result[0])
+
+            string += " The rolls were: "
+            string += ''.join(["{},".format(i) for i in result[1]])[:-1]
+
+            return string
+
+        except UserNotAdded as err:
+            return err.message
+
+        except UserInsufficentPermissions as err:
+            return err.message
+
+        except BadInput as err:
+            return err.message
+
+        except InvalidType as err:
+            print(err.message)
             return "An error occured... Sorry"
 
     def flipStats(self):
@@ -413,7 +407,7 @@ class JeevesUserInterface:
         return "Heads: {}\nTails: {}".format(self.games.numheads,\
             self.games.numtails)
 
-    def givePoints(self,ctx,to,amount):
+    def givePoints(self,ctx,amount,to):
         """
             Gives the specified amount to the member
 
@@ -422,11 +416,11 @@ class JeevesUserInterface:
             ctx    : (discord.ext.Context)
                 A context given to us from the discord bot.
 
-            to     : (str)
-                The member we want to send the amount to. 
-            
             amount : (int)
                 The amount that we want to give.     
+
+            to     : (str)
+                The member we want to send the amount to. 
 
             Returns
             _______
@@ -442,15 +436,15 @@ class JeevesUserInterface:
             if(amount < 0):
                 raise BadInput("Please make the amount a positve integer")
 
-            member = msg.author
-            opp    = self.findName(msg.server,to)
+            member = ctx.message.author
+            opp    = self.findName(ctx.message.server,to)
 
-            mpoints = self.checkPoints(member)
+            mpoints = self.db.checkPoints(member)
             if(mpoints - abs(amount) < 0):
                 return "You do not have enough to give away {} points"\
                     .format(mpoints)
             
-            self.exchangePoints(member,opp,amount)
+            self.db.exchangePoints(member,opp,amount)
 
             return "Gave {} points to {}".format(amount,opp.name)
 
@@ -460,5 +454,6 @@ class JeevesUserInterface:
             return err.message
         except BadInput as err:
             return err.message
-        except ValueError:
+        except InvalidType as err:
+            print(err.message) 
             return "An error occured... Sorry"

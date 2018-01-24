@@ -18,10 +18,15 @@ __copyright__ = 'Coppyright 2018 garetroy'
 __version__   = '0.1.0'
 
 
-from collections    import namedtuple
-from .jeeves        import Jeeves
-from .jeevesuser    import JeevesUser
-from .riotinterface import RiotInterface
+__all__ = ['cogs','jeeves','jeevesuser','riotinterface','jeevesuserinterface',\
+            'test','games','db']
+
+from collections                import namedtuple
+from jeeves.jeeves              import Jeeves
+from jeeves.jeevesuser          import JeevesUser
+from jeeves.riotinterface       import RiotInterface
+from jeeves.jeevesuserinterface import JeevesUserInterface
+from jeeves.db                  import DB
 
 VersionInfo = namedtuple('VersionInfo', 'major minor micro releaselevel serial')
 

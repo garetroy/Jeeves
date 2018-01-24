@@ -1,2 +1,3 @@
 cassiopeia
 discord.py
+sqlalchemy

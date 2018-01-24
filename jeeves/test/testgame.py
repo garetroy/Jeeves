@@ -1,7 +1,6 @@
 import os, sys, unittest
-sys.path.insert(0, os.path.abspath(".."))
-from games   import Games
-from errors   import *
+from .games   import Games
+from .errors   import *
 from discord  import Member
 from datetime import datetime, date, time
 
