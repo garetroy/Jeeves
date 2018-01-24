@@ -67,7 +67,6 @@ class RiotInterface:
             string += champ + (" "*(14-len(champ)))
 
         return "```" + string + "```"
-    
 if __name__ == '__main__':
     with open('../data/info.json', 'r') as jsonf:
         key = json.load(jsonf)['riot']

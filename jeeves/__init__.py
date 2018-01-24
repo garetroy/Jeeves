@@ -15,13 +15,14 @@ __title__     = 'Jeeves'
 __author__    = 'garetroy'
 __license__   = 'Unlicense'
 __copyright__ = 'Coppyright 2018 garetroy'
-__version__   = '0.0.1'
+__version__   = '0.1.0'
 
 
+from collections    import namedtuple
 from .jeeves        import Jeeves
-from .user          import User
+from .jeevesuser    import JeevesUser
 from .riotinterface import RiotInterface
 
 VersionInfo = namedtuple('VersionInfo', 'major minor micro releaselevel serial')
 
-version_info = VersionInfo(major=0, minor=0, micro=1, releaselevel='alpha', serial=0)
+version_info = VersionInfo(major=0, minor=1, micro=0, releaselevel='alpha', serial=0)

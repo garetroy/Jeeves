@@ -1,6 +1,6 @@
 from random     import randrange
 from discord    import Member,Role,utils
-from errors     import *
+from .errors     import *
 class Games:
     def __init__(self,debugnum=None):
         self.debugnum = debugnum

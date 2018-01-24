@@ -1,8 +1,8 @@
 import discord, asyncio
 import json
 import wikipedia
-from riotinterface import RiotInterface
-from jeevesuserinterface import JeevesUserInterface
+from .riotinterface import RiotInterface
+from .jeevesuserinterface import JeevesUserInterface
 from discord.ext import commands
 
 description = "? to use me ;)"

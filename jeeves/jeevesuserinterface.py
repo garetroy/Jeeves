@@ -1,10 +1,34 @@
-from sys        import maxsize as maxint
-from jeevesuser import JeevesUser
-from games      import Games
-from errors     import *
-from discord    import Member,utils
+from sys         import maxsize as maxint
+from .jeevesuser import JeevesUser
+from .games      import Games
+from .errors     import *
+from discord     import Member,utils
 
 class JeevesUserInterface:
+    """
+        Represents a interface for the discord bot. 
+        This class is used to communicate to the bot directly
+        in essence funneling all functionality into it
+
+    .. _discord.Role: https://discordpy.readthedocs.io/en/latest/api.html#discord.Role
+    .. _discord.Member: https://discordpy.readthedocs.io/en/latest/api.html#discord.Member
+
+    :class:`JeevesUserInterface` takes one argument.
+
+    Parameters
+    ----------
+    adminrole : [`discord.Role`_]
+        The admin role from the server. This is important to know so that
+        the bot will always allow privliges to the admin.
+
+    Attributes
+    ----------
+    games : (:class:`Games`)
+        The games instance.
+    
+    adminrole : (`discord.Role`_)
+        The administrator role given as a parameter for the server.
+    """
     
     def __init__(self,adminrole):
         self.usersTable = {}
@@ -12,7 +36,49 @@ class JeevesUserInterface:
         self.adminrole  = adminrole
 
     def cssify(self,string):
+        """
+            Returns the string in css format for the discord bot
+            so that it can properly format and color.
+
+            Parameters
+            -----------
+            string : str
+                The string that we want to cssify.
+
+            Returns
+            -------
+            str
+                The cssifyied string
+        """
         return "```css\n{}```".format(string)
+
+    def hasPermission(self, member, roles=[]):
+        """
+            This function checks if the `discord.member`_ has 
+            sufficent permissions.
+            
+            Paramaters
+            ----------
+            member : `discord.Member`_
+                The member we are going to check for permissions.
+            roles  : Optional[`discord.Roles`_]
+                The roles we are checking against. Admin is defined by default.
+
+            Raises 
+            -------
+            ValueError
+                Member instance was not passed in
+            UserInsufficentPermissions
+                The member did not have sufficent permissions      
+        """
+            
+        if not isinstance(member, Member):
+            raise ValueError
+        
+        #admin always there
+        roles.append(self.adminrole)
+        if(not any((i in roles) for i in member.roles)):
+            raise UserInsufficentPermissions(member.name)
 
     def addUser(self, member, cmdfrom=None):
         if not isinstance(member, Member):
@@ -46,32 +112,6 @@ class JeevesUserInterface:
             raise UserNotAdded(name)
 
         return mem 
-         
-    def checkPoints(self, member):
-        if not isinstance(member, Member):
-            raise ValueError
-
-        if(member not in self.usersTable):
-            if(self.addUser(member)):
-                return self.usersTable[member].points
-            raise UserNotAdded(member.name)
-        else:
-            return self.usersTable[member].points
-
-    def exchangePoints(self, user1, user2, amount):
-        self.addUser(user1)
-        self.addUser(user2)
-        self.usersTable[user1].points -= amount
-        self.usersTable[user2].points += amount
-    
-    def hasPermission(self, member, roles=[]):
-        if not isinstance(member, Member):
-            raise ValueError
-        
-        roles.append(self.adminrole) #admin always there
-        [print(i) for i in roles]
-        if(not any((i in roles) for i in member.roles)):
-            raise UserInsufficentPermissions(member.name)
 
     def getRole(self,msg,rolename):
         if(rolename == None):
@@ -104,7 +144,24 @@ class JeevesUserInterface:
 
         except ValueError:
             return "Something went wrong..."
-          
+ 
+    def checkPoints(self, member):
+        if not isinstance(member, Member):
+            raise ValueError
+
+        if(member not in self.usersTable):
+            if(self.addUser(member)):
+                return self.usersTable[member].points
+            raise UserNotAdded(member.name)
+        else:
+            return self.usersTable[member].points
+
+    def exchangePoints(self, user1, user2, amount):
+        self.addUser(user1)
+        self.addUser(user2)
+        self.usersTable[user1].points -= amount
+        self.usersTable[user2].points += amount
+         
     def flip(self,opponent,guess,bet,msg):
         if(guess == None):
             return self.games.flipCoin() 
