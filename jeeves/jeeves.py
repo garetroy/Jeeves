@@ -1,11 +1,16 @@
 import discord, asyncio
 import json
 import wikipedia
-from .riotinterface import RiotInterface
+from os                   import listdir
+from os.path              import join,isfile
+from .riotinterface       import RiotInterface
 from .jeevesuserinterface import JeevesUserInterface
-from discord.ext import commands
+from discord.ext          import commands
 
 description = "? to use me ;)"
+startup_extensions = [f"jeeves.cogs.{ext[:-3]}" \
+                for ext in listdir(join('jeeves', 'cogs')) if\
+                ext.endswith(".py") and not ext.startswith("_")]
 
 class Jeeves(commands.Bot):
     def __init__(self):
@@ -26,17 +31,24 @@ class Jeeves(commands.Bot):
 
     @property
     def token(self):
-        with open('../data/info.json', 'r') as jsonf:
+        with open('./data/info.json', 'r') as jsonf:
             return json.load(jsonf)['token']
     
     @property
     def riot(self):
-        with open('../data/info.json', 'r') as jsonf:
+        with open('./data/info.json', 'r') as jsonf:
             return json.load(jsonf)['riot']
 
     @classmethod
     def init(bot):
         bot = Jeeves()
+        #load cogs
+        for extension in startup_extensions:
+            try:
+                bot.load_extension(extension)
+            except Exception as e:
+                print(f'Failed to load extension {extension}.')
+                traceback.print_exc()
         try:
             bot.run(bot.token, reconnect=True)
         except Exception as e:
@@ -127,4 +139,4 @@ class Jeeves(commands.Bot):
         await self.say(self.JUI.givePoints(ctx,to,amount))
 
 if __name__ == '__main__':
-    Jeeves.init()
+           Jeeves.init()

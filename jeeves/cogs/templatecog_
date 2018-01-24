@@ -1,0 +1,35 @@
+from discord.ext import commands
+class TemplateCog:
+    def __init__(self, bot):
+        self.bot = bot
+
+    #This adds commands
+    @commands.command()
+    async def randomcommand(self,iliketurtles):
+        #here iliketurtles is a required command
+        """Chooses between multiple choices."""
+        if(iliketurtles):
+            await self.bot.say("I like turtles")
+        else:
+            await self.bot.say("I don't like turtles")
+
+    #here the context is passed. Kind of great thing. From the context
+    #you can get the message ctx.message and the author ctx.message.author
+    #which you can do a lot with.... see https://discordpy.readthedocs.io/en/latest/api.html
+    #for all the things these can do... ctx.message is of type discord.Message
+    #and ctx.message.author returns type discord.Member
+    @commands.command(pass_context=True)
+    async def randomcommand2(self,ctx,required,*,iliketurtles):
+        #You have to pass the context in first here
+        #with the *,iliketurtles, the whole string from the command will be
+        #put into iliketurtles
+        #EX. ?randomcommand2 dog frog log, iliketurtles = "frog log"
+        await self.bot.say((False,"BOT"))
+        
+        #this self.bot.say will get rid of the colored code and make
+        #the bot say normal code
+
+
+
+def setup(bot):
+    bot.add_cog(TemplateCog(bot))

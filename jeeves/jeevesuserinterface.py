@@ -1,8 +1,8 @@
 from .jeevesuser import JeevesUser
 from .games      import Games
 from .errors     import *
-from discord     import Member,utils
-from sys         import maxsize as maxint
+from discord    import Member,utils
+from sys        import maxsize as maxint
 
 class JeevesUserInterface:
     """
