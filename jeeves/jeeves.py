@@ -1,6 +1,7 @@
 import discord, asyncio
 import json
 import wikipedia
+import glob
 from os                   import listdir
 from os.path              import join,isfile
 from .riotinterface       import RiotInterface
@@ -9,8 +10,8 @@ from discord.ext          import commands
 
 description = "? to use me ;)"
 startup_extensions = [f"jeeves.cogs.{ext[:-3]}" \
-                for ext in listdir(join('jeeves', 'cogs')) if\
-                ext.endswith(".py") and not ext.startswith("_")]
+                for ext in glob.glob("src/discord/*.py")]
+                
 
 class Jeeves(commands.Bot):
     def __init__(self):
