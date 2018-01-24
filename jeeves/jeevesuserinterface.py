@@ -1,8 +1,8 @@
-from sys         import maxsize as maxint
 from .jeevesuser import JeevesUser
 from .games      import Games
 from .errors     import *
 from discord     import Member,utils
+from sys         import maxsize as maxint
 
 class JeevesUserInterface:
     """
@@ -12,6 +12,7 @@ class JeevesUserInterface:
 
     .. _discord.Role: https://discordpy.readthedocs.io/en/latest/api.html#discord.Role
     .. _discord.Member: https://discordpy.readthedocs.io/en/latest/api.html#discord.Member
+    .. _discord.Server: https://discordpy.readthedocs.io/en/latest/api.html#discord.Server
 
     :class:`JeevesUserInterface` takes one argument.
 
@@ -23,7 +24,7 @@ class JeevesUserInterface:
 
     Attributes
     ----------
-    games : (:class:`Games`)
+    games     : (:class:`Games`)
         The games instance.
     
     adminrole : (`discord.Role`_)
@@ -42,13 +43,12 @@ class JeevesUserInterface:
 
             Parameters
             -----------
-            string : str
+            string : (str)
                 The string that we want to cssify.
 
             Returns
             -------
-            str
-                The cssifyied string
+            **Returns** the cssifyied string.
         """
         return "```css\n{}```".format(string)
 
@@ -57,19 +57,21 @@ class JeevesUserInterface:
             This function checks if the `discord.member`_ has 
             sufficent permissions.
             
-            Paramaters
+            Parameters
             ----------
-            member : `discord.Member`_
+            member : (`discord.Member`_)
                 The member we are going to check for permissions.
-            roles  : Optional[`discord.Roles`_]
-                The roles we are checking against. Admin is defined by default.
+
+            roles  : Optional[`discord.Role`_]
+                The roles we are checking against. Admin is added automatically.
 
             Raises 
             -------
             ValueError
-                Member instance was not passed in
+                member was not a `discord.Member`_ instance.
+
             UserInsufficentPermissions
-                The member did not have sufficent permissions      
+                The member did not have sufficent permissions.
         """
             
         if not isinstance(member, Member):
@@ -81,6 +83,27 @@ class JeevesUserInterface:
             raise UserInsufficentPermissions(member.name)
 
     def addUser(self, member, cmdfrom=None):
+        """
+            Adds user to the hashtable. This will be replaced by a 
+            database in the near future.
+
+            Parameters
+            ----------
+            member  : (`discord.Member`_)
+                The member that we want to add.
+
+            cmdfrom : Optional[`discord.Member`_]
+                If populated, checks the permissions of this member
+                to see if we can add the member to the group.
+
+            Raises
+            -------
+            ValueError
+                member or cmndfrom was not `discord.Member`_ instance.
+
+            UserInsufficentPermissions
+                This will be indirectly raised from `hasPermission`
+        """
         if not isinstance(member, Member):
             raise ValueError
 
@@ -91,17 +114,37 @@ class JeevesUserInterface:
         #then it checks if cmdfrom has permissions to add the member instead
         #self.hasPermission(member if cmdfrom == None else cmdfrom)
 
-        if member in self.usersTable:
-            return True
+        if member in users.Table:
+            return
 
         ju = JeevesUser(member)
         if(member.nick != None):
             ju.callme = (member.nick, True)
 
         self.usersTable[member] = ju
-        return True
 
     def findName(self,server,name):
+        """
+            Finds the name in the given server, then returning the 
+            `discord.Member`_ associated with the name.
+        
+            Parameters
+            ----------
+            server : (`discord.Server`_)
+                The server we want to search for the name in.
+
+            name   : (str)
+                The string representing the name we want to search for.
+        
+            Raises
+            -------
+            UserNotAdded
+                If we cannot find the name in the server.
+
+            Returns
+            --------
+            **Returns** `discord.Member`_.
+        """
         mem = server.get_member_named(name)
 
         if(mem == None):
@@ -113,7 +156,27 @@ class JeevesUserInterface:
 
         return mem 
 
-    def getRole(self,msg,rolename):
+    def getRole(self,server,rolename):
+        """
+            Gets the role from the given server.
+
+            Parameters
+            ----------
+            server   : (`discord.Server`_)
+                The server we want to search for the given role in.
+
+            rolename : (str)
+                The name of the role we want to search for.
+
+            Raises
+            ------
+            BadInput
+                If there is an invalid or role was not specified
+
+            Returns
+            -------
+            **Returns** the desired `discord.Role`_
+        """
         if(rolename == None):
             raise BadInput("Didn't specify a role")
 
@@ -123,10 +186,29 @@ class JeevesUserInterface:
 
         return result
 
-    def register(self,name,msg,role):
+    def register(self,ctx,name,role):
+        """
+            Registers the given name with the role from the context.
+            
+            Parameters
+            -----------
+            ctx  : (discord.ext.Context)
+                The context given from discord bot.
+
+            name : (str)
+                The name of the member we want to change.
+
+            role : (str)
+                The role we want to move the member into.
+        
+            Returns
+            -------
+            **Returns** a str. Describes the success if successful. If not
+            it returns the error message.
+        """ 
         try:
             user = self.findName(msg.server,name)
-            role = self.getRole(msg,role)
+            role = self.getRole(msg.server,role)
 
             self.hasPermission(msg.author)
 
@@ -146,28 +228,89 @@ class JeevesUserInterface:
             return "Something went wrong..."
  
     def checkPoints(self, member):
+        """
+            Returns the points from a given member.
+
+            Parameters
+            ----------
+            member : (`discord.Member`_)
+            
+            Raises
+            -------
+            ValueError
+                The member was not a `discord.Member`_ instance.
+            
+            Returns
+            -------
+            **Returns** the correspoing points. (int) 
+            
+        """
         if not isinstance(member, Member):
             raise ValueError
 
         if(member not in self.usersTable):
-            if(self.addUser(member)):
-                return self.usersTable[member].points
-            raise UserNotAdded(member.name)
-        else:
-            return self.usersTable[member].points
+            self.addUser(member)
 
-    def exchangePoints(self, user1, user2, amount):
-        self.addUser(user1)
-        self.addUser(user2)
-        self.usersTable[user1].points -= amount
-        self.usersTable[user2].points += amount
+        return self.usersTable[member].points
+
+    def exchangePoints(self, member1, member2, amount):
+        """
+            Subtracts the amount from one user and gives it to another.
+        
+            Parameters
+            ----------
+            member1 : (`discord.Member`_)
+                The member we are taking the amount from.
+
+            member2 : (`discord.Member`_)
+                The member we are giving the amount to.
+
+            amount  : (int)
+                The amount we are exchanging.
+
+            Raises
+            -------
+            See raises from `addUser`
+        """ 
+        self.addUser(member1)
+        self.addUser(member2)
+        self.usersTable[member1].points -= amount
+        self.usersTable[member2].points += amount
          
-    def flip(self,opponent,guess,bet,msg):
+    def flip(self,ctx,opponent,guess,bet):
+        """
+            A wrapper function for the `Games` role modules in order
+            to place bets based on a coin flip. (or just flip a coin).
+            If no guess is specified, then it will just flip the coin.
+            If no opponent or bet is specified, and guess is, then it
+            will flip the coin with the guess in mind.
+
+            Parameters
+            ----------
+            ctx      : (discord.ext.Context)
+                The context given from discord bot.
+            
+            opponent : Optional[`discord.Member`_]
+                The member we want to bet against.
+
+            guess    : Optional[str]
+                This should be a string containing "heads" or "tails".
+            
+            bet      : (int)
+                The amount that the individual wants to bet. You can
+                bet against yourself (by going negitive). 
+
+            Returns
+            -------
+            **Returns** a corresponding string, depending on the above options
+            if there is an error, it will print the string error.
+         
+        """ 
         if(guess == None):
             return self.games.flipCoin() 
         if(bet == None and guess == None):
             return self.games.flipCoinGuess(guess)[1]
-        if(all(item is not None for item in [guess,bet,opponent,msg])):
+        if(all(item is not None for item in [guess,bet,opponent])):
             try:
 
                 try:
@@ -175,11 +318,11 @@ class JeevesUserInterface:
                 except:
                     raise BadInput("Enter an integer for bet")
 
-                member = msg.author
-                opp    = self.findName(msg.server,opponent)
+                member = ctx.message.author
+                opp    = self.findName(ctx.message.server,opponent)
                 
                 #You have permission if you are in Games role
-                #gamerole = self.getRole(msg,"Games")
+                #gamerole = self.getRole(msg.server,"Games")
                 #self.hasPermission(member,[gamerole])
 
                 opoints = self.checkPoints(opp)
@@ -213,7 +356,6 @@ class JeevesUserInterface:
             except UserInsufficentPermissions as err:
                 return err.message
 
-
             except BadInput as err:
                 return err.message
 
@@ -223,13 +365,30 @@ class JeevesUserInterface:
         else:
             return "Invalid input"
 
-    def points(self,name,msg):
+    def points(self,ctx,name=None):
+        """
+            Checks the points of the person who asked, or the name specified.
+        
+            Parameters
+            ----------
+            ctx  : (discord.ext.Context)
+                The context given by the discord bot.
+            
+            name : Optional[str]
+                The name of the member we want to check points for.
+            
+            Returns
+            _______
+            **Returns** It will return the points of the corresponding 
+            member.(string)
+            If it fails, it will return a string with the error.
+        """
         try:
             if(name == None):
-                user = msg.author
+                user = ctx.message.author
                 return "You have {} points.".format(self.checkPoints(user))
             else:
-                user = self.findName(msg.server,name)
+                user = self.findName(ctx.message.server,name)
                 return "{} has {} points".format(user.name,\
                     self.checkPoints(user))            
             
@@ -243,10 +402,37 @@ class JeevesUserInterface:
             return "An error occured... Sorry"
 
     def flipStats(self):
+        """
+            Just returns a string with the amount of heads and tails
+            have been flipped from the `Game` instance.
+            
+            Returns
+            _______
+            **Returns** a string corresponding to the amount of heads and tails.
+        """
         return "Heads: {}\nTails: {}".format(self.games.numheads,\
             self.games.numtails)
 
-    def givePoints(self,msg,to,amount):
+    def givePoints(self,ctx,to,amount):
+        """
+            Gives the specified amount to the member
+
+            Parameters
+            ----------
+            ctx    : (discord.ext.Context)
+                A context given to us from the discord bot.
+
+            to     : (str)
+                The member we want to send the amount to. 
+            
+            amount : (int)
+                The amount that we want to give.     
+
+            Returns
+            _______
+            **Returns** a corresponding string showing success.
+            If a failure, it will return the string of the error.
+        """ 
         try:
             try:
                 amount = int(amount)

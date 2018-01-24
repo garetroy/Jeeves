@@ -94,8 +94,7 @@ class Jeeves(commands.Bot):
 
     @commands.command(pass_context=True)
     async def register(self,ctx, name, *, role=None):
-        msg = ctx.message
-        results = self.JUI.register(name,msg,role)
+        results = self.JUI.register(ctx,name,role)
         if(len(results) == 1):
             await self.say(results[0])
             return
@@ -109,13 +108,11 @@ class Jeeves(commands.Bot):
 
     @commands.command(pass_context=True)
     async def points(self,ctx,*,name=None):
-        msg = ctx.message
-        await self.say(self.JUI.points(name,msg))
+        await self.say(self.JUI.points(ctx,name))
 
     @commands.command(pass_context=True)
     async def flip(self,ctx,guess=None,bet=None, *, opponent=None):
-        msg  = ctx.message
-        await self.say(self.JUI.flip(opponent,guess,bet,msg))
+        await self.say(self.JUI.flip(ctx,opponent,guess,bet))
 
     @commands.command()
     async def flipstats(self):
@@ -127,8 +124,7 @@ class Jeeves(commands.Bot):
 
     @commands.command(pass_context=True)
     async def give(self,ctx,to,amount):
-        msg = ctx.message
-        await self.say(self.JUI.givePoints(msg,to,amount))
+        await self.say(self.JUI.givePoints(ctx,to,amount))
 
 if __name__ == '__main__':
     Jeeves.init()
