@@ -135,10 +135,13 @@ class JeevesUserInterface:
             -------
             **Returns** the desired `discord.Role`_
         """
+        if not isinstance(type(server),Server):
+            raise InvalidType(type(server),type(Server),"JUI.getRole")
+
         if(rolename == None):
             raise BadInput("Didn't specify a role")
 
-        result = utils.get(msg.server.roles, name=rolename)
+        result = utils.get(server.roles, name=rolename)
         if(result == None):
             raise BadInput("{} is not a vailid role".format(rolename))
 
