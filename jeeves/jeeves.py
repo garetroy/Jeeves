@@ -26,6 +26,8 @@ class Jeeves(commands.Bot):
         self.add_command(self.points)
         self.add_command(self.flip)
         self.add_command(self.flipstats)
+        self.add_command(self.rollstats)
+        self.add_command(self.botstats)
 #        self.add_command(self.register)
         self.add_command(self.give)
         self.add_command(self.roll)
@@ -142,6 +144,14 @@ class Jeeves(commands.Bot):
     @commands.command()
     async def flipstats(self):
         await self.say(self.JUI.flipStats())
+
+    @commands.command()
+    async def rollstats(self):
+        await self.say(self.JUI.rollStats())
+
+    @commands.command()
+    async def botstats(self):
+        await self.say(self.JUI.serverStats())
 
     @commands.command()
     async def wiki(self,item):

@@ -21,12 +21,15 @@ class JeeveStats(Base):
     creationdate    = Column(DateTime)
     gamestatsrel    = relationship("GameStats", backref=\
             backref("JeeveStats", uselist=False)) 
-    gamestats       = association_proxy('gamestatsrel','GameStats')
+    gamestats       = association_proxy('gamestatsrel','GameStats',
+                        creator=lambda gamestatsrel: GameStats(Gamestats=\
+                        gamestatsrel))
     
     def __init__(self):
         self.exchangedpoints = 0
         self.databaseaccess  = 1 #includes commits and queries
         self.creationdate    = datetime.now()
+        self.games           = GameStats()
 
 class GameStats(Base):
     """

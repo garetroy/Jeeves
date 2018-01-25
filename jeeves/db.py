@@ -1,11 +1,12 @@
-from sqlalchemy     import create_engine
-from sqlalchemy.orm import sessionmaker
-from discord        import Member
-from .jeevesuser    import JeevesUser
-from .jeevesuser    import Base as Jubase
-from .jeevestats    import JeeveStats, GameStats
-from .jeevestats    import Base as Jsbase
-from .errors        import *
+from sqlalchemy         import create_engine
+from sqlalchemy.orm     import sessionmaker, exc
+from sqlalchemy.orm.exc import NoResultFound
+from discord            import Member
+from .jeevesuser        import JeevesUser
+from .jeevesuser        import Base as Jubase
+from .jeevestats        import JeeveStats, GameStats
+from .jeevestats        import Base as Jsbase
+from .errors            import *
 
 class DB:
     """
@@ -44,11 +45,12 @@ class DB:
         self._populateStats()
 
     def _populateStats(self):
-        self.jeevestats = JeeveStats()
-        self.session.add(self.jeevestats)
-        self.session.commit()
+        try:
+            self.jeevestats = self.session.query(JeeveStats).one()
+        except NoResultFound:
+            self.jeevestats = JeeveStats()
 
-        self.games  = self.jeevestats.gamestats
+        self.games      = self.jeevestats.gamestats
 
     def changeStats(self,**kwargs):
         """
@@ -85,24 +87,7 @@ class DB:
 
         if('roll' in kwargs):
             curarg  = kwargs['roll'] 
-            games   = self.games
-            mapping = {1:games.numones,2:games.numtwos,3:games.numthrees,\
-                    4:games.numfours, 5:games.numfives, 6:games.numsixes}
-
-            num = 0
-            for i in curargs:
-                try:
-                    num = int(i)  
-                except:
-                    raise BadArgs('roll','changeStats',\
-                            '{} cannot be converted to integer'.format(i))
-
-                if(i < 1 or i > 6):
-                    raise BadArgs('roll','changeStats','Got {} not an int'\
-                        +' that is not between 1 and 6'.format(i)) 
-
-                mapping[num]   += 1
-                games.numrolls += 1
+            self.games.numrolls += 1
 
         if('exchangedpoints' in kwargs):
             curarg = kwargs['exchangedpoints']
@@ -114,7 +99,7 @@ class DB:
                 
             self.jeevestats.exchangedpoints += curarg
 
-        self.jeevestats.exchangedpoints += 1
+        self.jeevestats.databaseaccess += 1
         self.session.commit()
 
     @property
@@ -127,6 +112,7 @@ class DB:
             **Returns** A tuple with (numheads(int),numtails(int),numflips
             (int)).
         """
+        self.jeevestats.databaseaccess += 1
         return (self.games.numheads,self.games.numtails,self.games.numflips)
 
     @property
@@ -142,6 +128,7 @@ class DB:
         mapping = {1:games.numones,2:games.numtwos,3:games.numthrees,\
                     4:games.numfours, 5:games.numfives, 6:games.numsixes,\
                     7:games.numrolls}
+        self.jeevestats.databaseaccess += 1
         return mapping
 
     @property
@@ -155,8 +142,11 @@ class DB:
             creationdate(datetime))
         """
 
-        return (self.jeevestats.exchangedpoints,self.jeevestats.databaseacess,\
-                self.jeevestats.creationdate)
+        creationdate = self.jeevestats.creationdate.\
+            strftime("%Y-%m-%d")
+        self.jeevestats.databaseaccess += 1
+        return (self.jeevestats.exchangedpoints,self.jeevestats.databaseaccess,\
+                creationdate)
 
     def changeFlipStats(self,stats):
         """
@@ -238,7 +228,7 @@ class DB:
         elif not isinstance(member,JeevesUser):
             raise InvalidType(type(member), type(JeevesUser), "DB.addUser3")
 
-        self.jeevesstats.databaceaccess += 1
+        self.jeevestats.databaseaccess += 1
 
         self.session.add(member)
         self.session.commit()
@@ -258,7 +248,7 @@ class DB:
             UserNotAdded
                 When the member dosen't exist in the database.
         """
-        self.jeevesstats.databaceaccess += 1
+        self.jeevestats.databaseaccess += 1
         self.session.delete(self.getMember) 
         self.session.commit()
 
@@ -288,7 +278,7 @@ class DB:
             memberid = member.id
 
 
-        self.jeevesstats.databaceaccess += 1
+        self.jeevestats.databaseaccess += 1
         user = self.session.query(JeevesUser).\
             filter_by(discordid=memberid).first()
 
@@ -351,5 +341,5 @@ class DB:
 
         member1.points                  -= amount
         member2.points                  += amount
-        self.jeevesstats.databaceaccess += 1
+        self.jeevestats.databaseaccess  += 1
         self.session.commit()

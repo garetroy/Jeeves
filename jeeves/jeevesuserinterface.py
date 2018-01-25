@@ -340,8 +340,8 @@ class JeevesUserInterface:
             **Returns** a string corresponding to the amount of heads and tails.
         """
         stats = self.db.flipstats
-        return "Total Rolls: {}\nHeads: {}\nTails: {}".format(stats[2],\
-            stats[0],stats[1])
+        return "Heads: {}\nTails: {}\nTotal Flips: {}".format(stats[0],\
+            stats[1],stats[2])
 
     def rollStats(self):
         """
@@ -351,11 +351,8 @@ class JeevesUserInterface:
             -------
             **Returns** a string with corresponding roll information. 
         """ 
-        stats = self.db.rollstats
+        stats  = self.db.rollstats
         string = "Total Rolls: {}\n".format(stats[7])
-        for i in range(1,6):
-            string += "Number of {}s: {}\n".format(stats[i])
-        string += "Number of {}s: {}".format(stats[6])
 
         return string
 
@@ -368,10 +365,10 @@ class JeevesUserInterface:
             **Returns** a string with corresponding server information.
         """
         stats   = self.db.serverstats
-        string  = "Total exchanged points: {}\nAmount of database accesses: {}"\
-                .format(stats[0], stats[1])
-        string += "\nBot Creation: {}\nAuthor: Garett Roberts".format(\
+        string  = "Author: Garett Roberts\nBot Creation: {}\n".format(\
                 stats[2])
+        string  += "Total exchanged points: {}\nAmount of database accesses: {}"\
+                .format(stats[0], stats[1])
 
         return string
 
