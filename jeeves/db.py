@@ -5,12 +5,36 @@ from .jeevesuser    import JeevesUser,Base
 from .errors        import *
 
 class DB:
+    """
+        Represents a sqllite database, that uses sqlalchemy to 
+        store, retrieve, and delete data.
+
+        .. _discord.Member: https://discordpy.readthedocs.io/en/latest/api.html#discord.Member
+
+    :class: `JeevesUserInterface` takes one argument.
+
+    Parameters
+    ----------
+    checkpermmethod : (function)
+        This method is what we will check permissions with.
+
+    Attributes
+    -----------
+    engine : sqlalchemy engine
+        The engine for sqlalchemy.
+
+    session : sqlalchemy session
+        The session for the database.
+
+    hasPermisssion : function
+        The function for checking permissions.
+    """
     def __init__(self,checkpermmethod):
-        self.engine    = create_engine('sqlite:///jeeves.db',echo=True) 
+        self.engine        = create_engine('sqlite:///jeeves.db',echo=True) 
         Base.metadata.create_all(self.engine)
-        self.Session   = sessionmaker(bind=self.engine)
-        self.session   = self.Session()
-        self.checkperm = checkpermmethod
+        self.Session       = sessionmaker(bind=self.engine)
+        self.session       = self.Session()
+        self.hasPermission = checkpermmethod
         
     def addUser(self,member,cmdfrom=None):
         """
@@ -62,12 +86,48 @@ class DB:
         self.session.commit()
         return member
 
+    def deleteUser(self,member):
+        """
+            Finds member in the database then deletes them.
+
+            Parameters
+            -----------
+            member : `discord.Member`_
+                The member we wnat to delete.
+
+            Raises
+            ______
+            UserNotAdded
+                When the member dosen't exist in the database.
+        """
+        self.session.delete(self.getMember) 
+        self.session.commit()
+
     def getUser(self,member,addUser=False):
+        """
+            Get's the User entry from the corresponding member.
+
+            Parameters
+            ----------
+            member : (`discord.Member`_)
+                The member we want to look up
+            
+            addUser : Optional[addUser=False]
+                This will bypass raising user not added
+
+            Raises
+            -------
+            UserNotAdded
+                If it can't find the user.
+
+            Returns
+            --------
+            **Returns** Member if found.
+            Returns None if adduser is True       
+        """
         if isinstance(member,Member):
             memberid = member.id
 
-        print(member.id)
-        print(addUser)
 
         user = self.session.query(JeevesUser).\
             filter_by(discordid=memberid).first()

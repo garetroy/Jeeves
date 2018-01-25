@@ -11,14 +11,14 @@ class JeevesUserInterface:
         This class is used to communicate to the bot directly
         in essence funneling all functionality into it
 
-    .. _discord.Role: https://discordpy.readthedocs.io/en/latest/api.html#discord.Role
-    .. _discord.Member: https://discordpy.readthedocs.io/en/latest/api.html#discord.Member
-    .. _discord.Server: https://discordpy.readthedocs.io/en/latest/api.html#discord.Server
+        .. _discord.Role: https://discordpy.readthedocs.io/en/latest/api.html#discord.Role
+        .. _discord.Member: https://discordpy.readthedocs.io/en/latest/api.html#discord.Member
+        .. _discord.Server: https://discordpy.readthedocs.io/en/latest/api.html#discord.Server
 
     :class:`JeevesUserInterface` takes one argument.
 
     Parameters
-    ----------
+    -----------
     adminrole : [`discord.Role`_]
         The admin role from the server. This is important to know so that
         the bot will always allow privliges to the admin.
@@ -31,10 +31,8 @@ class JeevesUserInterface:
     adminrole : (`discord.Role`_)
         The administrator role given as a parameter for the server.
     """
-    
     def __init__(self,adminrole):
-        self.usersTable = {}
-        self.db         = DB(self.hasPermission)
+        self.db         = None
         self.games      = Games()
         self.adminrole  = adminrole
 
@@ -69,13 +67,12 @@ class JeevesUserInterface:
 
             Raises 
             -------
-           InvalidInput 
+            InvalidInput 
                 member was not a `discord.Member`_ instance.
 
             UserInsufficentPermissions
                 The member did not have sufficent permissions.
         """
-            
         if not isinstance(member, Member):
             raise InvalidInput(type(member),type(Member),"jui.hasPersmission")
         
@@ -315,85 +312,17 @@ class JeevesUserInterface:
             print(err.message)
             return "An error occured... Sorry"
 
-    def roll(self,ctx,opponent,numdice,desnum,bet):
+    def roll(self):
         """
-            Rolls dice against opponent.
+            Rolls dice.
 
-            Bets are calculated as...
-            (bet*2)^(number of correct guess) -
-            (bet*2)^(number of wrong guesses)
-
-            Parameters
-            ----------
-            ctx : (discord.ext.Context)
-                A context given by the discord bot.
-            
-            opponent : (str)
-                The name of the opponent we want to roll against.
-            
-            numdice : (int)
-                The amount of dice we want to bet with.
-
-            desnum : (int)
-                The desired numbers from the dice.
-
-            bet : (int)
-                The bet against the dice.
-
-           
             Returns
             --------
             Returns a string if you won or lost.
             If error, returns the error string.
         """
-        try:
-            opp = self.findName(ctx.message.server,opponent) 
-            try:
-                numdice = int(numdice)  
-                desnum  = int(desnum)
-                bet     = int(bet)
-                if(numdice < 0 or desnum < 0 or bet < 0):
-                    raise BadInput("")
-            except BadInput:
-                raise BadInput("Please positve integers for numdice, desnum,"+\
-                   " and bet") 
 
-            needed = self.games.neededAmount(numdice,bet)
-            if(self.db.checkPoints(opp) < needed):
-                raise BadInput("{} does not have the balance to bet this much"\
-                    .format(opp.name))
-
-            if(self.db.checkPoints(ctx.message.author) < needed):
-                raise BadInput("{} does not have the balance to bet this much"\
-                    .format(ctx.message.author.name))
-
-            result = self.games.rollDiceBet(numdice,desnum,bet)
-            self.exchangePoints(ctx.message.author,opp,result[0])
-           
-            print(result)
-            if(result[0] >= 0):
-                string  = "{} won {} points".format(ctx.message.author.name,\
-                        result[0])
-            else:
-                string  = "{} won {} points.".format(opp.name,(-1)*result[0])
-
-            string += " The rolls were: "
-            string += ''.join(["{},".format(i) for i in result[1]])[:-1]
-
-            return string
-
-        except UserNotAdded as err:
-            return err.message
-
-        except UserInsufficentPermissions as err:
-            return err.message
-
-        except BadInput as err:
-            return err.message
-
-        except InvalidType as err:
-            print(err.message)
-            return "An error occured... Sorry"
+        return "You rolled a {}".format(self.games.rollDice())
 
     def flipStats(self):
         """
