@@ -10,11 +10,13 @@ class UserNotAdded(JeevesException):
         An JeevesException that raises when there is not a user added to the
         server or "not found".
 
-        Attributes
+        Parameters
         ----------
         name : string
             The name of the Member not found.
         
+        Attributes
+        ----------
         message : string
             The message that is generated from this error.
     """
@@ -28,11 +30,13 @@ class UserInsufficentPermissions(JeevesException):
         An JeevesException that raises when a Member does not have sufficent
         permissions.
 
-        Attributes
-        ----------
+        Parameters
+        -----------
         name : string
             The name of the Member not found.
         
+        Attributes
+        ----------
         message : string
             The message that is generated from this error.
     """
@@ -56,8 +60,8 @@ class InvalidType(JeevesException
     """
         An JeevesException that raises when the input was bad.
 
-        Attributes
-        ----------
+        Parameters
+        -----------
         type1 : type
             The type we got.
 
@@ -67,6 +71,8 @@ class InvalidType(JeevesException
         location : string
             A string with the location of the incident.
         
+        Attributes
+        ----------
         message : string
             The message that is generated from this error.
     """):
