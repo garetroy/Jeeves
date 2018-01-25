@@ -117,6 +117,81 @@ class DB:
         self.jeevestats.exchangedpoints += 1
         self.session.commit()
 
+    @property
+    def flipstats(self):
+        """
+            Gets the flip stats from the database.
+        
+            Returns
+            --------
+            **Returns** A tuple with (numheads(int),numtails(int),numflips
+            (int)).
+        """
+        return (self.games.numheads,self.games.numtails,self.games.numflips)
+
+    @property
+    def rollstats(self):
+        """
+            Gets the roll stats from the database.
+
+            Returns
+            --------
+            **Returns** A dictonary {1:numones,...,6:numsixes,7:numrolls}
+        """
+        games   = self.games
+        mapping = {1:games.numones,2:games.numtwos,3:games.numthrees,\
+                    4:games.numfours, 5:games.numfives, 6:games.numsixes,\
+                    7:games.numrolls}
+        return mapping
+
+    @property
+    def serverstats(self):
+        """
+            Gets the server stats from the database.
+        
+            Returns
+            --------
+            **Returns** A tuple (exchangedpoints(int),databaseaccess(int),
+            creationdate(datetime))
+        """
+
+        return (self.jeevestats.exchangedpoints,self.jeevestats.databaseacess,\
+                self.jeevestats.creationdate)
+
+    def changeFlipStats(self,stats):
+        """
+            Changes the flip stats with the given data. Utilizes changeStats.
+
+            Parameters
+            ----------
+            stats : (str)
+                A string that contains heads or tails.   
+        """
+        self.changeStats(flip=stats)
+
+    def changeRollStats(self,stats):
+        """
+            Changes the roll stats with the given data. Utilises changeStats.
+            Parameters
+            ----------- 
+            stats : (list(int))
+                A list of integers representing rolls were made.
+                **IMPORTANT** Must be and int between 1 and 6
+        """
+        self.changeStats(roll=stats)
+
+    def changeExchangedPointsStats(self,stats):
+        """
+            Changes the exchangedpoints stat with the given data. Utilizes 
+            change Stats.
+
+            Parameters
+            -----------
+            stats : (int)
+                The amount to increase exchangedpoints by
+        """
+        self.changeStats(exchangedpoints=stats)
+
     def addUser(self,member,cmdfrom=None):
         """
             Adds user to the hashtable. This will be replaced by a 
@@ -163,6 +238,8 @@ class DB:
         elif not isinstance(member,JeevesUser):
             raise InvalidType(type(member), type(JeevesUser), "DB.addUser3")
 
+        self.jeevesstats.databaceaccess += 1
+
         self.session.add(member)
         self.session.commit()
         return member
@@ -181,6 +258,7 @@ class DB:
             UserNotAdded
                 When the member dosen't exist in the database.
         """
+        self.jeevesstats.databaceaccess += 1
         self.session.delete(self.getMember) 
         self.session.commit()
 
@@ -210,6 +288,7 @@ class DB:
             memberid = member.id
 
 
+        self.jeevesstats.databaceaccess += 1
         user = self.session.query(JeevesUser).\
             filter_by(discordid=memberid).first()
 
@@ -265,8 +344,12 @@ class DB:
         if not isinstance(member2, Member):
             raise InvalidType(type(member),type(Member),"DB.exchangePoints2")
 
-        member1 = self.addUser(member1) 
-        member2 = self.addUser(member2)
-        member1.points -= amount
-        member2.points += amount
+        member1                          = self.addUser(member1) 
+        member2                          = self.addUser(member2)
+
+        self.changeExchangedPointsStats(amount)
+
+        member1.points                  -= amount
+        member2.points                  += amount
+        self.jeevesstats.databaceaccess += 1
         self.session.commit()
