@@ -1,7 +1,10 @@
 from sqlalchemy     import create_engine
 from sqlalchemy.orm import sessionmaker
 from discord        import Member
-from .jeevesuser    import JeevesUser,Base
+from .jeevesuser    import JeevesUser
+from .jeevesuser    import Base as Jubase
+from .jeevestats    import JeeveStats, GameStats
+from .jeevestats    import Base as Jsbase
 from .errors        import *
 
 class DB:
@@ -31,11 +34,89 @@ class DB:
     """
     def __init__(self,checkpermmethod):
         self.engine        = create_engine('sqlite:///jeeves.db',echo=True) 
-        Base.metadata.create_all(self.engine)
+        Jubase.metadata.create_all(self.engine)
+        Jsbase.metadata.create_all(self.engine)
+
         self.Session       = sessionmaker(bind=self.engine)
         self.session       = self.Session()
         self.hasPermission = checkpermmethod
         
+        self._populateStats()
+
+    def _populateStats(self):
+        self.jeevestats = JeeveStats()
+        self.session.add(self.jeevestats)
+        self.session.commit()
+
+        self.games  = self.jeevestats.gamestats
+
+    def changeStats(self,**kwargs):
+        """
+            Changes the stats on the given arguments in kwargs.
+
+            Parameters
+            ----------
+            flip : Optional(str) 
+                This will change the flip stats accordingly.
+                **IMPORTANT** This can only be equal to heads or tails
+
+            roll : Optional([list])
+                This will change the roll stats accordingly.
+                **IMPORTANT** Only provide integers between one and 6 in the 
+                list.
+
+            exchangedpoints : Optional(int)
+                This will change the point stats accordingly.
+        """
+            
+        if(kwargs is None):
+            return
+
+        curarg = None
+        if('flip' in kwargs):
+            curarg = kwargs['flip']
+            if('heads' == curarg):
+                self.games.numheads += 1
+            elif('tails' == curarg):
+                self.games.numtails += 1
+            else:
+                raise BadArgs('flip','changeStats','No heads or tails present') 
+            self.games.numflips += 1 
+
+        if('roll' in kwargs):
+            curarg  = kwargs['roll'] 
+            games   = self.games
+            mapping = {1:games.numones,2:games.numtwos,3:games.numthrees,\
+                    4:games.numfours, 5:games.numfives, 6:games.numsixes}
+
+            num = 0
+            for i in curargs:
+                try:
+                    num = int(i)  
+                except:
+                    raise BadArgs('roll','changeStats',\
+                            '{} cannot be converted to integer'.format(i))
+
+                if(i < 1 or i > 6):
+                    raise BadArgs('roll','changeStats','Got {} not an int'\
+                        +' that is not between 1 and 6'.format(i)) 
+
+                mapping[num]   += 1
+                games.numrolls += 1
+
+        if('exchangedpoints' in kwargs):
+            curarg = kwargs['exchangedpoints']
+            try:
+                curarg = int(curarg)
+            except:
+                raise BadArgs('exchangedpoints','changeStats',\
+                    '{} cannot be converted to integer'.format(curarg))
+                
+            self.jeevestats.exchangedpoints += curarg
+
+        self.jeevestats.exchangedpoints += 1
+        self.session.commit()
+
     def addUser(self,member,cmdfrom=None):
         """
             Adds user to the hashtable. This will be replaced by a 

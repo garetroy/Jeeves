@@ -95,7 +95,7 @@ class JeevesUser(Base):
             InvalidType
                 If it is not a corresponding type.
         """
-        rif not isinstance(other,JeevesUser):
+        if not isinstance(other,JeevesUser):
             raise InvalidType(type(other),type(JeevesUser), "JU gt")
         
         return self.points > other.points

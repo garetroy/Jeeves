@@ -19,11 +19,12 @@ __version__   = '0.1.0'
 
 
 __all__ = ['cogs','jeeves','jeevesuser','riotinterface','jeevesuserinterface',\
-            'test','games','db']
+            'test','games','db','jeevestats']
 
 from collections                import namedtuple
 from jeeves.jeeves              import Jeeves
 from jeeves.jeevesuser          import JeevesUser
+from jeeves.jeevestats          import JeeveStats
 from jeeves.riotinterface       import RiotInterface
 from jeeves.jeevesuserinterface import JeevesUserInterface
 from jeeves.db                  import DB
