@@ -56,7 +56,7 @@ class BadInput(JeevesException):
     def __init__(self, message):
         self.message = message
 
-class InvalidType(JeevesException
+class InvalidType(JeevesException):
     """
         An JeevesException that raises when the input was bad.
 
@@ -68,14 +68,38 @@ class InvalidType(JeevesException
         type2 : type
             The type we expected.
     
-        location : string
+        location : str
             A string with the location of the incident.
         
         Attributes
         ----------
-        message : string
+        message : str
             The message that is generated from this error.
-    """):
+    """
     def __init__(self, type1, type2, location):
         self.message = "Got type:{} but expected type:{} - in {}".format(\
             type1,type2,location)
+
+class BadArgs(JeevesException):
+    """
+        A JeevesException that raises when bad **kwargs are passed in.
+
+        Parameters
+        -----------
+        what : str
+            What argument was bad.
+
+        where : str
+            Location where it was bad.
+    
+        why : str 
+            Why the argument was bad.
+
+        Attributes
+        -----------
+        message : str
+            The message that is generated from this error.
+    """
+    def __init__(self,what,where,why):
+        self.message = "{} at {} had a bad argument because {}".format(\
+            what,where,why)
