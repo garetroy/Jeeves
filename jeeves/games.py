@@ -9,14 +9,6 @@ class Games:
         -----------
         debugnum = Optional[int=None]
             This is for debugging purposes.
-
-        Attributes
-        -----------
-        numheads : (int)
-            Number of recorded head flips.
-
-        numtails : (int)
-            Number of recorded tail flips.
     """
     def __init__(self,debugnum=None):
         self.debugnum = debugnum
@@ -33,10 +25,8 @@ class Games:
         """
         val =  randrange(0,2) if self.debugnum == None else self.debugnum
         if(val == 0):
-            self.numheads += 1
             return 'heads'
         else:
-            self.numtails += 1
             return 'tails'
 
     def flipCoinGuess(self,guess):
@@ -55,8 +45,9 @@ class Games:
 
             Returns
             -------
-            **Returns** A tuple (bool,str), the bool indicating if you won,
-            the string with the corresponding message of winning or losing.
+            **Returns** A tuple (bool,str,str), the bool indicating winning or
+            losing. The first string to generate a win/lose message. The last
+            string with what the result was.
         """
         side = self.flipCoin()
 
@@ -67,8 +58,8 @@ class Games:
             raise BadInput("Please use heads/tails")
 
         if(side == guess.lower()):
-            return (True, "It was {}! You won.".format(side))
-        return (False,"It was {}! You lost.".format(side))
+            return (side, "It was {}! You won.".format(side),side)
+        return (side,"It was {}! You lost.".format(side),side)
 
     def rollDice(self):
         """

@@ -219,9 +219,13 @@ class JeevesUserInterface:
          
         """ 
         if(guess == None):
-            return self.games.flipCoin() 
+            flip = self.games.flipCoin()
+            self.db.changeFlipStats(flip)
+            return flip
         if(bet == None and guess == None):
-            return self.games.flipCoinGuess(guess)[1]
+            flip = self.games.flipCoinGuess(guess)
+            self.db.changeFlipStats(flip[2]) 
+            return flip[1]
         if(all(item is not None for item in [guess,bet,opponent])):
             try:
 
@@ -246,9 +250,7 @@ class JeevesUserInterface:
                     return "You insufficant funds".format(member.name)
                  
                 result = self.games.flipCoinGuess(guess)
-
-                if(result[0] == None):
-                    return result[1]
+                self.db.changeFlipStats(result[2])
 
                 if(result[0]):
                     self.db.exchangePoints(opp,member,int(bet))
@@ -324,20 +326,54 @@ class JeevesUserInterface:
             Returns a string if you won or lost.
             If error, returns the error string.
         """
-
-        return "You rolled a {}".format(self.games.rollDice())
+        
+        roll = self.games.rollDice()
+        self.db.changeRollStats([roll]) 
+        return "You rolled a {}".format(roll)
 
     def flipStats(self):
         """
-            Just returns a string with the amount of heads and tails
-            have been flipped from the `Game` instance.
+            Returns a string with the flip stats.
             
             Returns
-            _______
+            --------
             **Returns** a string corresponding to the amount of heads and tails.
         """
-        return "Heads: {}\nTails: {}".format(self.games.numheads,\
-            self.games.numtails)
+        stats = self.db.flipstats
+        return "Total Rolls: {}\nHeads: {}\nTails: {}".format(stats[2],\
+            stats[0],stats[1])
+
+    def rollStats(self):
+        """
+            Returns a string with the dice rolling stats.
+
+            Returns
+            -------
+            **Returns** a string with corresponding roll information. 
+        """ 
+        stats = self.db.rollstats
+        string = "Total Rolls: {}\n".format(stats[7])
+        for i in range(1,6):
+            string += "Number of {}s: {}\n".format(stats[i])
+        string += "Number of {}s: {}".format(stats[6])
+
+        return string
+
+    def serverStats(self):
+        """
+            Returns a string with the server stats.
+        
+            Returns
+            _______
+            **Returns** a string with corresponding server information.
+        """
+        stats   = self.db.serverstats
+        string  = "Total exchanged points: {}\nAmount of database accesses: {}"\
+                .format(stats[0], stats[1])
+        string += "\nBot Creation: {}\nAuthor: Garett Roberts".format(\
+                stats[2])
+
+        return string
 
     def givePoints(self,ctx,amount,to):
         """
