@@ -6,6 +6,7 @@ from os                   import listdir
 from os.path              import join,isfile
 from .riotinterface       import RiotInterface
 from .jeevesuserinterface import JeevesUserInterface
+from .db                  import DB
 from discord.ext          import commands
 
 description        = "? to use me ;)"
@@ -18,18 +19,19 @@ class Jeeves(commands.Bot):
         super().__init__(command_prefix="?", description=description,
             pm_help=None) 
         self.add_command(self.hi)
-        self.add_command(self.sumlvl)
-        self.add_command(self.lolV)
-        self.add_command(self.lollast)
-        self.add_command(self.wiki)
+#        self.add_command(self.sumlvl)
+#        self.add_command(self.lolV)
+#        self.add_command(self.lollast)
+#        self.add_command(self.wiki)
         self.add_command(self.points)
         self.add_command(self.flip)
         self.add_command(self.flipstats)
-        self.add_command(self.register)
+#        self.add_command(self.register)
         self.add_command(self.give)
-#        self.add_command(self.roll)
+        self.add_command(self.roll)
         self.RI        = RiotInterface(self.riot)
         self.JUI       = None
+        self.db        = None
 
     @property
     def token(self):
@@ -62,7 +64,9 @@ class Jeeves(commands.Bot):
         print(self.user.id)
         self.adminrole = discord.utils.get(list(self.servers)[0]\
             .roles, name="Gods")
-        self.JUI = JeevesUserInterface(self.adminrole)
+        self.JUI    = JeevesUserInterface(self.adminrole)
+        self.db     = DB(self.JUI.hasPermission)
+        self.JUI.db = self.db 
 
     def say(self,*args,**kwargs):
         
@@ -129,8 +133,8 @@ class Jeeves(commands.Bot):
         await self.say(self.JUI.flip(ctx,opponent,guess,bet))
 
     @commands.command(pass_context=True)
-    async def roll(self,ctx,opponent,numdice,desirednumber,bet):
-        await self.say(self.JUI.roll(ctx,opponent,numdice,desirednumber,bet))
+    async def roll(self):
+        await self.say(self.JUI.roll())
 
     async def roll_error(self,ctx,error):
         await self.say(error.message)
