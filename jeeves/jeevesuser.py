@@ -7,7 +7,7 @@ Base = declarative_base()
 class JeevesUser(Base):
     """
         A JeevesUser class that is also a sqlalchmey base.
-        (This means it is OMI, automatically generated tables from
+        (This means it is OMR, automatically generated tables from
         the class definition)
 
         .. _discord.Member: https://discordpy.readthedocs.io/en/latest/api.html#discord.Member
