@@ -1,6 +1,6 @@
-JeevesUserInterface 
+JeevesDatabase
 ----------------------------------
 
-.. automodule:: jeeves.jeevesuserinterface
+.. automodule:: jeeves.db
     :members:
     :noindex:

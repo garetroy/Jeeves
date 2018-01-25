@@ -10,9 +10,11 @@ Welcome to Jeeves's documentation!
    :maxdepth: 2
    :caption: Contents:
 
+    module
+
 .. include:: jeevesuserinterface.rst
 
-
+.. include:: jeevesdb.rst
 
 Indices and tables
 ==================
