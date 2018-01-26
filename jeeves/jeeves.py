@@ -85,7 +85,8 @@ class Jeeves(commands.Bot):
 
         return super().say(*args,**kwargs)
         
-    @commands.command(description="hi")
+    description = "Jeeves greets you."
+    @commands.command(description=description,brief=description)
     async def hi(self):
         await self.say("hi")
 
@@ -126,30 +127,41 @@ class Jeeves(commands.Bot):
     async def register_error(self,ctx,error):
         await self.say("Invalid input")
 
-    @commands.command(pass_context=True)
+    description = "Shows either your own or someone elses points."
+    longdesc    = "Name : Optional parameter of who's points you want to look up."
+    @commands.command(pass_context=True,brief=description,description=longdesc)
     async def points(self,ctx,*,name=None):
         await self.say(self.JUI.points(ctx,name))
 
-    @commands.command(pass_context=True)
+    description = "Flips a coin, can take a guess, can bet against people."
+    longdesc    = description + "\nguess: Optional, the guess if the flip" + \
+                 " will be heads or tails. (Use 'heads' or 'tails')." +\
+                 "\nbet: The amount you want to wager against an opponent." + \
+                 "\nopponent: The name of the person you want to bet against."
+    @commands.command(pass_context=True,brief=description,description=longdesc)
     async def flip(self,ctx,guess=None,bet=None, *, opponent=None):
         await self.say(self.JUI.flip(ctx,opponent,guess,bet))
 
-    @commands.command(pass_context=True)
+    description = "Rolls dice, telling you what Jeeves rolled."
+    @commands.command(pass_context=True,brief=description,description=description)
     async def roll(self):
         await self.say(self.JUI.roll())
 
     async def roll_error(self,ctx,error):
         await self.say(error.message)
 
-    @commands.command()
+    description = "Shows you coin flipping stats."
+    @commands.command(brief=description,description=description)
     async def flipstats(self):
         await self.say(self.JUI.flipStats())
 
-    @commands.command()
+    description = "Shows you dice rolling stats."
+    @commands.command(brief=description,description=description)
     async def rollstats(self):
         await self.say(self.JUI.rollStats())
 
-    @commands.command()
+    description = "Shows you the stats of Jeeves."
+    @commands.command(description=description, brief=description)
     async def botstats(self):
         await self.say(self.JUI.serverStats())
 
@@ -157,7 +169,11 @@ class Jeeves(commands.Bot):
     async def wiki(self,item):
         await self.say(wikipedia.summary(item))
 
-    @commands.command(pass_context=True)
+    description = "Allows you to give your points to someone."
+    longdesc    = "Allows you to give your points to someone.\n" + \
+                 "amount : Amount you want to give.\n"+\
+                 "to: Name of who you want to gift."
+    @commands.command(pass_context=True,brief=description,description=longdesc)
     async def give(self,ctx,amount,*,to):
         await self.say(self.JUI.givePoints(ctx,amount,to))
 
