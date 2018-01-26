@@ -58,8 +58,8 @@ class Games:
             raise BadInput("Please use heads/tails")
 
         if(side == guess.lower()):
-            return (side, "It was {}! You won.".format(side),side)
-        return (side,"It was {}! You lost.".format(side),side)
+            return (True, "It was {}! You won.".format(side),side)
+        return (False,"It was {}! You lost.".format(side),side)
 
     def rollDice(self):
         """

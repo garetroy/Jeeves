@@ -252,6 +252,7 @@ class JeevesUserInterface:
                 result = self.games.flipCoinGuess(guess)
                 self.db.changeFlipStats(result[2])
 
+                print(result)
                 if(result[0]):
                     self.db.exchangePoints(opp,member,int(bet))
                 else:
