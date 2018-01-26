@@ -19,17 +19,13 @@ class JeeveStats(Base):
     exchangedpoints = Column(Integer) 
     databaseaccess  = Column(Integer)
     creationdate    = Column(DateTime)
-    gamestatsrel    = relationship("GameStats", backref=\
-            backref("JeeveStats", uselist=False)) 
-    gamestats       = association_proxy('gamestatsrel','GameStats',
-                        creator=lambda gamestatsrel: GameStats(Gamestats=\
-                        gamestatsrel))
+    GameStats       = relationship("GameStats",backref=backref("JeeveStats",\
+                         uselist=False))
     
     def __init__(self):
         self.exchangedpoints = 0
         self.databaseaccess  = 1 #includes commits and queries
         self.creationdate    = datetime.now()
-        self.games           = GameStats()
 
 class GameStats(Base):
     """
@@ -38,7 +34,7 @@ class GameStats(Base):
 
     __tablename__ = "GameStats"
     id            = Column(Integer, primary_key=True)
-    jeevestatsid  = Column(Integer, ForeignKey('JeeveStats.id'))
+    jeevestats_id = Column(Integer, ForeignKey('JeeveStats.id'))
     numheads      = Column(Integer)
     numtails      = Column(Integer)
     numflips      = Column(Integer)

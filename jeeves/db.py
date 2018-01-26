@@ -35,6 +35,7 @@ class DB:
     """
     def __init__(self,checkpermmethod):
         self.engine        = create_engine('sqlite:///jeeves.db',echo=True) 
+
         Jubase.metadata.create_all(self.engine)
         Jsbase.metadata.create_all(self.engine)
 
@@ -45,12 +46,16 @@ class DB:
         self._populateStats()
 
     def _populateStats(self):
-        try:
-            self.jeevestats = self.session.query(JeeveStats).one()
-        except NoResultFound:
+        self.jeevestats = self.session.query(JeeveStats).first()
+        self.games      = self.session.query(GameStats).first()
+        if(self.jeevestats is None):
             self.jeevestats = JeeveStats()
-
-        self.games      = self.jeevestats.gamestats
+            self.session.add(self.jeevestats)
+            self.session.commit()
+        if(self.games is None):
+            self.games      = GameStats()
+            self.session.add(self.games)
+            self.session.commit()
 
     def changeStats(self,**kwargs):
         """
