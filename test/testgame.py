@@ -1,6 +1,6 @@
 import os, sys, unittest
 from .games   import Games
-from .errors   import *
+from .errors  import *
 from discord  import Member
 from datetime import datetime, date, time
 
