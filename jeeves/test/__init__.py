@@ -9,5 +9,6 @@
     :license: Unlicense, see LICENSE
 """
 
+__all__ = ['testgame']
 
-from . import *
+from jeeves.test.testgame import GamesTests
