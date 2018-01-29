@@ -24,7 +24,6 @@ __all__ = ['cogs','jeeves','jeevesuser','riotinterface','jeevesuserinterface',\
 from collections                import namedtuple
 from jeeves.jeeves              import Jeeves
 from jeeves.jeevesuser          import JeevesUser
-from jeeves.jeevestats          import JeeveStats
 from jeeves.riotinterface       import RiotInterface
 from jeeves.jeevesuserinterface import JeevesUserInterface
 from jeeves.db                  import DB

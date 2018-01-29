@@ -1,6 +1,6 @@
 from random     import randrange
 from discord    import Member,Role,utils
-from .errors     import *
+from .errors    import *
 class Games:
     """
         A game class with different games.
